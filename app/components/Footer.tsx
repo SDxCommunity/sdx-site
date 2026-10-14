@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { useSelectedLayoutSegments } from 'next/navigation';
 import { sendGAEvent } from '@next/third-parties/google';
 import MotionSection from '@/app/components/motion/MotionSection';
 
@@ -11,12 +12,19 @@ import MotionSection from '@/app/components/motion/MotionSection';
 const FooterCanvas = dynamic(() => import('./FooterCanvas'), { ssr: false });
 
 const Footer: React.FC = () => {
+  // The UCSD chapter drops the top border and uses bold sentence-case column headings.
+  const segments = useSelectedLayoutSegments();
+  const onUcsdChapter = segments[0] === 'chapters' && segments[1] === 'ucsd';
+  const headingClass = onUcsdChapter
+    ? 'text-sm font-bold text-white mb-4'
+    : 'text-xs uppercase tracking-widest text-white/60 mb-4';
+
   const handleLinkClick = (linkUrl: string, label: string) => {
     sendGAEvent('clicked', { link_url: linkUrl, label });
   };
 
   return (
-    <footer className="relative border-t border-white/5 pt-16 overflow-hidden">
+    <footer className={`relative pt-16 overflow-hidden ${onUcsdChapter ? '' : 'border-t border-white/5'}`}>
       <FooterCanvas />
 
       <MotionSection className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
@@ -77,7 +85,7 @@ const Footer: React.FC = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-xs uppercase tracking-widest text-white/60 mb-4">Navigate</h3>
+            <h3 className={headingClass}>Navigate</h3>
             <ul className="space-y-2">
               {[
                 { href: '/events', label: 'Events' },
@@ -95,7 +103,7 @@ const Footer: React.FC = () => {
 
           {/* Community */}
           <div>
-            <h3 className="text-xs uppercase tracking-widest text-white/60 mb-4">Community</h3>
+            <h3 className={headingClass}>Community</h3>
             <ul className="space-y-2">
               {[
                 { href: 'https://lu.ma/sdx', label: 'Events Calendar', external: true },

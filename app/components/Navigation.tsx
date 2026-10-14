@@ -8,8 +8,9 @@ import { m } from 'motion/react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import AsciiButton from './AsciiButton';
+import MotionButton from './motion/MotionButton';
 import LogoContextMenu from './LogoContextMenu';
-import { UCSD_JOIN_FORM } from '@/app/chapters/ucsd/lib/links';
+import { UCSD_JOIN } from '@/app/chapters/ucsd/lib/links';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -23,11 +24,11 @@ const MAIN_JOIN_URL = 'https://lu.ma/sdx';
 const Navigation: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   // Route segments reflect the matched route, so they are right on the server even when
-  // ucsd.sdx.community rewrites "/" to /chapters/ucsd. The header is the same everywhere;
-  // only the "Join" href changes, opening the chapter member application.
+  // ucsd.sdx.community rewrites "/" to /chapters/ucsd. The UCSD chapter gets a short bar
+  // with only the logo and a Join button that opens the chapter Luma calendar.
   const segments = useSelectedLayoutSegments();
   const onUcsdChapter = segments[0] === 'chapters' && segments[1] === 'ucsd';
-  const joinHref = onUcsdChapter ? UCSD_JOIN_FORM : MAIN_JOIN_URL;
+  const joinHref = onUcsdChapter ? UCSD_JOIN : MAIN_JOIN_URL;
 
   const handleLinkClick = (linkUrl: string) => {
     sendGAEvent('clicked', { link_url: linkUrl });
@@ -35,14 +36,18 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-black/90 backdrop-blur-md z-50 border-b border-white/5">
+    <nav
+      className={`fixed top-0 left-0 right-0 backdrop-blur-md z-50 ${
+        onUcsdChapter ? 'bg-black/30' : 'bg-black/90 border-b border-white/5'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className={`flex items-center justify-between ${onUcsdChapter ? 'h-14' : 'h-20'}`}>
           {/* Logo */}
           <LogoContextMenu>
             <Link href="/" className="flex-shrink-0 group relative" onClick={() => handleLinkClick('/')}>
               <m.span
-                className="font-display text-4xl tracking-tight flex relative"
+                className={`font-display ${onUcsdChapter ? 'text-3xl' : 'text-4xl'} tracking-tight flex relative`}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
               >
@@ -69,7 +74,7 @@ const Navigation: React.FC = () => {
           </LogoContextMenu>
 
           {/* Desktop Navigation — in flow on tablets, absolutely centered from lg so it never overlaps the CTAs */}
-          <div className="hidden md:flex items-center gap-1 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+          <div className={`${onUcsdChapter ? 'hidden' : 'hidden md:flex'} items-center gap-1 lg:absolute lg:left-1/2 lg:-translate-x-1/2`}>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -83,26 +88,39 @@ const Navigation: React.FC = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className={`${onUcsdChapter ? 'flex' : 'hidden md:flex'} items-center gap-3`}>
             <Link
               href="/executives"
               onClick={() => handleLinkClick('/executives')}
-              className="px-3 py-2 text-xs uppercase tracking-widest text-white/60 hover:text-white transition-colors duration-200"
+              className={`${onUcsdChapter ? 'hidden' : ''} px-3 py-2 text-xs uppercase tracking-widest text-white/60 hover:text-white transition-colors duration-200`}
             >
               Executives
             </Link>
-            <Link
-              href={joinHref}
-              target="_blank"
-              onClick={() => handleLinkClick(joinHref)}
-              className="block"
-            >
-              <AsciiButton>Join</AsciiButton>
-            </Link>
+            {onUcsdChapter ? (
+              <MotionButton>
+                <Link
+                  href={joinHref}
+                  target="_blank"
+                  onClick={() => handleLinkClick(joinHref)}
+                  className="block"
+                >
+                  <AsciiButton contentClassName="px-6 py-2">Join</AsciiButton>
+                </Link>
+              </MotionButton>
+            ) : (
+              <Link
+                href={joinHref}
+                target="_blank"
+                onClick={() => handleLinkClick(joinHref)}
+                className="block"
+              >
+                <AsciiButton>Join</AsciiButton>
+              </Link>
+            )}
           </div>
 
           {/* Mobile menu */}
-          <div className="md:hidden">
+          <div className={onUcsdChapter ? 'hidden' : 'md:hidden'}>
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <SheetTrigger asChild>
                 <button className="p-2 text-white/60 hover:text-white transition-colors duration-200">
@@ -147,7 +165,9 @@ const Navigation: React.FC = () => {
         </div>
       </div>
       {/* Holographic line separator */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      {!onUcsdChapter && (
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      )}
     </nav>
   );
 };
