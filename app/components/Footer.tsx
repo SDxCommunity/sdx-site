@@ -12,11 +12,11 @@ import MotionSection from '@/app/components/motion/MotionSection';
 const FooterCanvas = dynamic(() => import('./FooterCanvas'), { ssr: false });
 
 const Footer: React.FC = () => {
-  // The UCSD chapter drops the top border and uses bold, underlined sentence-case column headings.
+  // The UCSD chapter drops the top border and uses bold sentence-case column headings.
   const segments = useSelectedLayoutSegments();
   const onUcsdChapter = segments[0] === 'chapters' && segments[1] === 'ucsd';
   const headingClass = onUcsdChapter
-    ? 'text-sm font-bold text-white underline underline-offset-4 decoration-white/40 mb-4'
+    ? 'text-sm font-bold text-white mb-4'
     : 'text-xs uppercase tracking-widest text-white/60 mb-4';
 
   const handleLinkClick = (linkUrl: string, label: string) => {

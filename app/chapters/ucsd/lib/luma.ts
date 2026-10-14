@@ -51,11 +51,26 @@ type LumaGetItemsResponse = {
 };
 
 /**
- * Events that are not on the UCSD Luma calendar but belong on the timeline.
- * Dates are ISO start times; a noon-Pacific time keeps the shown date right.
+ * Events the Luma calendar API does not return but that belong on the timeline:
+ * ones run off the UCSD calendar, and ones the API has been seen to leave out.
+ * An entry with a real Luma api_id is dropped when the API does return it.
+ * Dates are ISO start times.
  */
 const EXTRA_EVENTS: UcsdEvent[] = [
   {
+    // On the UCSD calendar page, but missing from get-items as of 2026-10-14.
+    id: 'evt-WtTBtvfTfWC8PLP',
+    title: 'Fall Quarter Kickoff',
+    kind: 'feature',
+    date: '2026-10-04T23:00:00.000Z',
+    endDate: null,
+    timezone: 'America/Los_Angeles',
+    url: 'https://luma.com/sbm57xj6',
+    cover: null,
+    location: null,
+  },
+  {
+    // Run with YC, not on the UCSD Luma calendar. Noon Pacific keeps the shown date right.
     id: 'extra-yc-fireside-2026-02-01',
     title: 'YC Fireside & Office Hours',
     kind: 'major',
@@ -120,7 +135,24 @@ function normalizeEntry(entry: LumaEntry): UcsdEvent | null {
   };
 }
 
+/**
+ * Last good response per period. Luma rate-limits quickly, and `next.revalidate`
+ * does not cache in `next dev`, so without this every page load costs two calls.
+ * When a call fails, the last good list beats the bundled fallback.
+ */
+const MEMO_TTL_MS = 10 * 60 * 1000;
+const memo = new Map<'future' | 'past', { at: number; events: UcsdEvent[] }>();
+
 async function fetchLumaItems(period: 'future' | 'past'): Promise<UcsdEvent[] | null> {
+  const cached = memo.get(period);
+  if (cached && Date.now() - cached.at < MEMO_TTL_MS) return cached.events;
+  const events = await fetchLumaItemsUncached(period);
+  if (events === null) return cached?.events ?? null;
+  memo.set(period, { at: Date.now(), events });
+  return events;
+}
+
+async function fetchLumaItemsUncached(period: 'future' | 'past'): Promise<UcsdEvent[] | null> {
   try {
     const url = `${LUMA_ITEMS_URL}?calendar_api_id=${UCSD_CALENDAR_API_ID}&period=${period}&pagination_limit=50`;
     const res = await fetch(url, {

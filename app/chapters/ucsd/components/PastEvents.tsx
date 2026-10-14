@@ -178,8 +178,9 @@ function TodayMarker() {
       {/* Both tracks run into the marker so the line reads as continuous */}
       <span className={`absolute ${TRACK_TOP} left-0 w-1/2 border-t border-dashed border-white/25`} aria-hidden="true" />
       <span className={`absolute ${TRACK_TOP} right-0 w-1/2 h-px bg-white/35`} aria-hidden="true" />
-      <span className="absolute -top-2 h-11 left-1/2 w-px -translate-x-1/2 bg-white/80" aria-hidden="true" />
-      <span className="relative z-10 mt-9 h-fit rounded-sm border border-white/60 bg-black px-2 py-1 text-xs text-white">
+      {/* The label centers on the boxes' shared line: 1.25rem dot row + 1rem stem + half of 11.25rem */}
+      <span className="absolute -top-2 h-[7.5rem] left-1/2 w-px -translate-x-1/2 bg-white/80" aria-hidden="true" />
+      <span className="relative z-10 mt-[7.0625rem] h-fit rounded-sm border border-white/60 bg-black px-2 py-1 text-xs text-white">
         Today
       </span>
     </li>
@@ -217,7 +218,11 @@ function TimelineSlot({
         <span className="relative z-10 flex h-5 items-center justify-center transition-transform duration-300 group-hover:scale-125">
           {dot}
         </span>
-        <span className="h-4 w-px bg-white/15 group-hover:bg-white/35 transition-colors" aria-hidden="true" />
+        {/* Smaller boxes get a longer stem (half the 3.75rem height gap), so every box shares one center line */}
+        <span
+          className={`w-px bg-white/15 group-hover:bg-white/35 transition-colors ${featured ? 'h-4' : 'h-[2.875rem]'}`}
+          aria-hidden="true"
+        />
         <span
           className={`relative flex w-full flex-col items-center justify-center overflow-hidden rounded-sm border border-white/10 px-4 py-3.5 text-center transition-[border-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:border-white/30 ${
             featured ? 'h-[11.25rem] bg-black' : archive ? 'h-[7.5rem] bg-neutral-950' : 'h-[7.5rem] bg-black/70'
