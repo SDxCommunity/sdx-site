@@ -2,14 +2,12 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { m } from 'motion/react';
 import MotionSection from '@/app/components/motion/MotionSection';
 import media from '../lib/media';
-import { UCSD_LUMA_PAST } from '../lib/links';
 
 export default function About() {
   return (
-    <section className="relative py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative py-20 md:py-28 px-4 sm:px-6 lg:px-8 border-t border-white/5 overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0 opacity-40"
         style={{
@@ -25,24 +23,19 @@ export default function About() {
           <div className="lg:col-span-5 flex flex-col lg:h-full lg:justify-center">
             <MotionSection>
               <h2 className="font-display text-3xl md:text-5xl text-white tracking-tight leading-[1.08] prismatic-glow-sm">
-                What we do
+                What we do.
               </h2>
-              <ul className="mt-8 space-y-4 text-sm md:text-base text-white/70 leading-relaxed max-w-md list-disc pl-5 marker:text-white/40">
+              <ul className="mt-5 space-y-3 text-sm md:text-base text-white/50 leading-relaxed max-w-md list-disc pl-5 marker:text-white/30">
                 <li>
-                  Host weekly builder days and demo days, where students show what they are
-                  building with AI and get feedback from peers
+                  Host builder days to showcase community projects and get feedback
                 </li>
                 <li>
-                  Organize hackathons with partners like Vercel, Perplexity, Groq, and HelixDB,
-                  with cash prizes and API credits on the line
+                  Organize hackathons, fireside chats, and other events with startup founders
+                  and industry speakers
                 </li>
                 <li>
-                  Host fireside chats and office hours with startup founders, industry
-                  speakers, and Y Combinator
-                </li>
-                <li>
-                  Cultivate UCSD&apos;s builder community with cookouts, builder nights, hikes,
-                  and group dinners
+                  Cultivate UCSD&apos;s builder community with fun events (cookouts, builder
+                  nights, hikes, etc.)
                 </li>
               </ul>
             </MotionSection>
@@ -51,26 +44,19 @@ export default function About() {
           {/* Event collage — Luma covers, title only */}
           <div className="lg:col-span-7 flex lg:h-full">
             <MotionSection delay={0.08} className="w-full">
-              <div className="grid grid-cols-2 gap-5 sm:gap-7">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {media.about.map((tile) => (
-                  <m.a
+                  <div
                     key={tile.id}
-                    href={UCSD_LUMA_PAST}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${tile.title}: past events on Luma`}
-                    className="group relative block aspect-square overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow] duration-300"
-                    initial={false}
-                    style={{ rotate: tile.rotate }}
-                    whileHover={{ y: -8, rotate: tile.rotate.startsWith('-') ? '-2.6deg' : '2.6deg' }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                    className="relative aspect-square overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02]"
+                    style={{ transform: `rotate(${tile.rotate})` }}
                   >
                     <Image
                       src={tile.cover}
                       alt={tile.title}
                       fill
                       sizes="(min-width: 1024px) 320px, 50vw"
-                      className="object-cover opacity-85 transition-[opacity,transform] duration-500 group-hover:opacity-100 group-hover:scale-[1.04]"
+                      className="object-cover opacity-85"
                       onError={(e) => {
                         // Fallback wash if photo not dropped in yet
                         e.currentTarget.style.display = 'none';
@@ -89,7 +75,7 @@ export default function About() {
                         {tile.title}
                       </h4>
                     </div>
-                  </m.a>
+                  </div>
                 ))}
               </div>
             </MotionSection>

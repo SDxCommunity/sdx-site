@@ -1,45 +1,8 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-type AsciiButtonProps = {
-  children: React.ReactNode;
-  className?: string;
-  /** "dark" draws white glyphs on black, for secondary buttons beside a light one. */
-  tone?: 'light' | 'dark';
-  /** Replaces the default label padding, for example to make a square icon button. */
-  contentClassName?: string;
-};
-
-const TONES = {
-  light: {
-    fill: 'white',
-    glyph: 'rgba(0, 0, 0, 0.18)',
-    glyphHover: 'rgba(0, 0, 0, 0.18)',
-    container: 'bg-white',
-    text: 'text-black',
-    shadow: '0 0 15px rgba(255,255,255,0.5), 0 0 35px rgba(255,255,255,0.25), 0 0 70px rgba(255,255,255,0.12)',
-    shadowHover: '0 0 15px rgba(255,255,255,0.5), 0 0 35px rgba(255,255,255,0.25), 0 0 70px rgba(255,255,255,0.12)',
-  },
-  dark: {
-    fill: 'black',
-    glyph: 'rgba(255, 255, 255, 0.16)',
-    // On hover the glyphs vanish to plain black while the outline and glow brighten.
-    glyphHover: 'rgba(255, 255, 255, 0)',
-    container: 'bg-black outline outline-1 -outline-offset-1 outline-white/20 hover:outline-white/50 transition-[outline-color,box-shadow] duration-200',
-    text: 'text-white',
-    shadow: '0 0 12px rgba(255,255,255,0.14), 0 0 30px rgba(255,255,255,0.06)',
-    shadowHover: '0 0 15px rgba(255,255,255,0.35), 0 0 35px rgba(255,255,255,0.15), 0 0 70px rgba(255,255,255,0.08)',
-  },
-};
-
-const AsciiButton: React.FC<AsciiButtonProps> = ({
-  children,
-  className = '',
-  tone = 'light',
-  contentClassName = 'px-8 py-3',
-}) => {
-  const colors = TONES[tone];
+const AsciiButton: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number>(0);
@@ -50,9 +13,6 @@ const AsciiButton: React.FC<AsciiButtonProps> = ({
   // the hero CTA while dwelling at the footer) while its rAF loop keeps
   // running — pause the actual draw work when that happens.
   const visibleRef = useRef(true);
-  const [hovered, setHovered] = useState(false);
-  // Read by the draw loop, so a hover change does not restart the effect.
-  const hoveredRef = useRef(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -107,10 +67,10 @@ const AsciiButton: React.FC<AsciiButtonProps> = ({
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       ctx.scale(dpr, dpr);
 
-      ctx.fillStyle = colors.fill;
+      ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, w, h);
       ctx.font = `${fontSize}px "Space Mono", monospace`;
-      ctx.fillStyle = hoveredRef.current ? colors.glyphHover : colors.glyph;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
       ctx.textBaseline = 'top';
 
       const charW = ctx.measureText('@').width || fontSize * 0.6;
@@ -148,20 +108,14 @@ const AsciiButton: React.FC<AsciiButtonProps> = ({
       if (ro) ro.disconnect();
       if (intersectionObserver) intersectionObserver.disconnect();
     };
-  }, [colors]);
+  }, []);
 
   return (
     <div
       ref={containerRef}
-      className={`relative rounded-sm ${colors.container} ${className}`}
-      style={{ boxShadow: hovered ? colors.shadowHover : colors.shadow }}
-      onMouseEnter={() => {
-        hoveredRef.current = true;
-        setHovered(true);
-      }}
-      onMouseLeave={() => {
-        hoveredRef.current = false;
-        setHovered(false);
+      className={`relative rounded-sm bg-white ${className}`}
+      style={{
+        boxShadow: '0 0 15px rgba(255,255,255,0.5), 0 0 35px rgba(255,255,255,0.25), 0 0 70px rgba(255,255,255,0.12)',
       }}
     >
       <canvas
@@ -170,7 +124,7 @@ const AsciiButton: React.FC<AsciiButtonProps> = ({
         style={{ width: '100%', height: '100%', display: 'block' }}
         aria-hidden="true"
       />
-      <span className={`relative z-10 block text-xs uppercase tracking-widest font-bold ${colors.text} ${contentClassName}`}>
+      <span className="relative z-10 block px-8 py-3 text-xs uppercase tracking-widest font-bold text-black">
         {children}
       </span>
     </div>
