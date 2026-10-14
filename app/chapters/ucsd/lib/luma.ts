@@ -1,13 +1,18 @@
 import media from './media';
+import { UCSD_LUMA_PAST } from './links';
 
 /** SDx @ UC San Diego Luma calendar — verified calendar_api_id */
 const UCSD_CALENDAR_API_ID = 'cal-KkffVW3dzHMQmAx';
 
 const LUMA_ITEMS_URL = 'https://api.lu.ma/calendar/get-items';
 
+/** Sets the dot size and shade on the timeline: major > feature > regular. */
+export type UcsdEventKind = 'major' | 'feature' | 'regular';
+
 export type UcsdEvent = {
   id: string;
   title: string;
+  kind: UcsdEventKind;
   /** ISO start_at */
   date: string;
   endDate: string | null;
@@ -45,6 +50,50 @@ type LumaGetItemsResponse = {
   has_more: boolean;
 };
 
+/**
+ * Events that are not on the UCSD Luma calendar but belong on the timeline.
+ * Dates are ISO start times; a noon-Pacific time keeps the shown date right.
+ */
+const EXTRA_EVENTS: UcsdEvent[] = [
+  {
+    id: 'extra-yc-fireside-2026-02-01',
+    title: 'YC Fireside & Office Hours',
+    kind: 'major',
+    date: '2026-02-01T20:00:00.000Z',
+    endDate: null,
+    timezone: 'America/Los_Angeles',
+    url: UCSD_LUMA_PAST,
+    cover: null,
+    location: 'UC San Diego',
+  },
+];
+
+/**
+ * Drops the chapter prefix from Luma titles. "SDx @ UC San Diego - Tom Zheng Fireside"
+ * becomes "Tom Zheng Fireside". A bare "SDx @ UC San Diego" is the weekly Builder Day.
+ */
+export function cleanEventTitle(raw: string): string {
+  const title = raw
+    .replace(/^\s*(SDx\s*@\s*UC San Diego|SDxUCSD|SDx)\b/i, '')
+    .replace(/^\s*[-–—:]\s*/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return title || 'Builder Day';
+}
+
+export function eventKind(title: string): UcsdEventKind {
+  if (/hack|\bYC\b|Y Combinator/i.test(title)) return 'major';
+  if (title === 'Builder Day' || /lunch|dinner|meet\b/i.test(title)) return 'regular';
+  return 'feature';
+}
+
+function withExtras(events: UcsdEvent[], filter: 'upcoming' | 'past'): UcsdEvent[] {
+  const now = new Date().toISOString();
+  const extras = EXTRA_EVENTS.filter((e) => (filter === 'upcoming' ? e.date >= now : e.date < now));
+  const known = new Set(events.map((e) => e.id));
+  return [...events, ...extras.filter((e) => !known.has(e.id))];
+}
+
 function normalizeEntry(entry: LumaEntry): UcsdEvent | null {
   const event = entry?.event;
   if (!event || !event.api_id || !event.name || !event.start_at || !event.url) {
@@ -56,9 +105,12 @@ function normalizeEntry(entry: LumaEntry): UcsdEvent | null {
     event.geo_address_info?.city_state ||
     null;
 
+  const title = cleanEventTitle(event.name);
+
   return {
     id: event.api_id,
-    title: event.name,
+    title,
+    kind: eventKind(title),
     date: event.start_at,
     endDate: event.end_at ?? null,
     timezone: event.timezone || 'America/Los_Angeles',
@@ -94,7 +146,8 @@ async function fetchLumaItems(period: 'future' | 'past'): Promise<UcsdEvent[] | 
 function fallbackPastEvents(): UcsdEvent[] {
   return media.past.map((event) => ({
     id: event.id,
-    title: event.title,
+    title: cleanEventTitle(event.title),
+    kind: eventKind(cleanEventTitle(event.title)),
     date: event.date,
     endDate: null,
     timezone: event.timezone || 'America/Los_Angeles',
@@ -114,7 +167,7 @@ export async function getUcsdEventsWithFallbackStatus(
   if (filter === 'upcoming') {
     const events = await fetchLumaItems('future');
     return {
-      events: events === null ? [] : [...events].sort((a, b) => a.date.localeCompare(b.date)),
+      events: withExtras(events ?? [], 'upcoming').sort((a, b) => a.date.localeCompare(b.date)),
       fallback: events === null,
     };
   }
@@ -124,7 +177,7 @@ export async function getUcsdEventsWithFallbackStatus(
   const resolved = usedFallback ? fallbackPastEvents() : events;
 
   return {
-    events: [...resolved].sort((a, b) => b.date.localeCompare(a.date)),
+    events: withExtras(resolved, 'past').sort((a, b) => b.date.localeCompare(a.date)),
     fallback: usedFallback,
   };
 }

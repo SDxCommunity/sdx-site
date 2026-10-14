@@ -1,8 +1,9 @@
 # UCSD member applications: Tally → Notion
 
 The UCSD chapter application is a Tally form (https://tally.so/r/eqJV5q).
-Every "Join" button on the chapter (hero, bottom section, top bar) opens it
-in a new tab. Tally writes each submission into the **Applications** database
+The site no longer links it: since 2026-10-14 every "Join" button on the
+chapter opens the Luma calendar instead. The form is still on the chapter
+Linktree (linktr.ee/sdxucsd). Tally writes each submission into the **Applications** database
 in the SDxUCSD Core Documentation page in Notion (Dani's Space), under the
 Applications heading at the bottom of that page. This replaced the Google
 Form on 2026-09-09.
@@ -28,5 +29,5 @@ Form on 2026-09-09.
 
 ## Site link
 
-`UCSD_JOIN_FORM` in `app/chapters/ucsd/lib/links.ts` holds the share link.
-Change it there if the form is ever replaced.
+`UCSD_JOIN` in `app/chapters/ucsd/lib/links.ts` sets where every Join button
+goes. Set it back to the Tally link to send Join to the application again.

@@ -3,10 +3,22 @@
 import React, { useEffect, useRef } from 'react';
 import { useCanvasSettings } from './CanvasSettingsContext';
 
-const MetaballCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
+type MetaballCanvasProps = {
+  className?: string;
+  /** "none" drops the built-in bottom fade, for a hero that draws its own. */
+  bottomFade?: 'tall' | 'none';
+  /**
+   * Clears the blobs around this element instead of a fixed center ellipse, so they
+   * wrap the hero copy on every side with a soft, uneven edge.
+   */
+  clearAround?: React.RefObject<HTMLElement>;
+};
+
+const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomFade = 'tall', clearAround }) => {
   const { settings } = useCanvasSettings();
   const rootRef = useRef<HTMLDivElement>(null);
   const gooRef = useRef<HTMLDivElement>(null);
+  const centerFadeRef = useRef<HTMLDivElement>(null);
   const cellsRef = useRef<HTMLDivElement[]>([]);
   // Parallel plain-number arrays for per-cell home position + current/
   // last-written mouse offset — avoids per-frame dataset (DOM attribute)
@@ -68,10 +80,23 @@ const MetaballCanvas: React.FC<{ className?: string }> = ({ className = '' }) =>
     const offsetX = (w - (cols - 1) * gap) / 2;
     const offsetY = (h - (rows - 1) * gap) / 2;
 
-    const centerX = w / 2;
-    const centerY = h / 2;
-    const clearW = w * clearRadius;
-    const clearH = h * 0.4;
+    let centerX = w / 2;
+    let centerY = h / 2;
+    let clearW = w * clearRadius;
+    let clearH = h * 0.4;
+
+    const target = clearAround?.current;
+    if (target) {
+      const t = target.getBoundingClientRect();
+      centerX = t.left - rect.left + t.width / 2;
+      centerY = t.top - rect.top + t.height / 2;
+      // A touch more room than the copy itself, so the blobs sit on the outskirts.
+      clearW = (t.width / 2 + gap) * 1.12;
+      clearH = (t.height / 2 + gap) * 1.12;
+      if (centerFadeRef.current) {
+        centerFadeRef.current.style.background = `radial-gradient(ellipse ${Math.round(clearW * 1.3)}px ${Math.round(clearH * 1.3)}px at ${Math.round(centerX)}px ${Math.round(centerY)}px, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)`;
+      }
+    }
 
     const frag = document.createDocumentFragment();
     let css = '';
@@ -89,7 +114,12 @@ const MetaballCanvas: React.FC<{ className?: string }> = ({ className = '' }) =>
         const ey = (cy - centerY) / clearH;
         const ellipseDist = ex * ex + ey * ey;
 
-        if (ellipseDist < 1) {
+        if (target) {
+          // Clear inside the ellipse, then thin out over a band past its edge
+          // so the boundary looks eroded rather than drawn with a compass.
+          if (ellipseDist < 1) continue;
+          if (ellipseDist < 2.2 && sr(s + 20) > (ellipseDist - 1) / 1.2) continue;
+        } else if (ellipseDist < 1) {
           if (ellipseDist < 0.4) continue;
           if (sr(s + 20) > 0.15) continue;
         }
@@ -412,6 +442,7 @@ const MetaballCanvas: React.FC<{ className?: string }> = ({ className = '' }) =>
 
       {/* Radial fade around center */}
       <div
+        ref={centerFadeRef}
         className="absolute inset-0 pointer-events-none"
         style={{
           background: 'radial-gradient(ellipse 50% 35% at 50% 48%, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)',
@@ -419,10 +450,12 @@ const MetaballCanvas: React.FC<{ className?: string }> = ({ className = '' }) =>
       />
 
       {/* Bottom fade */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-[50%] pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 40%, black 75%)' }}
-      />
+      {bottomFade === 'tall' && (
+        <div
+          className="absolute inset-x-0 bottom-0 h-[50%] pointer-events-none"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 40%, black 75%)' }}
+        />
+      )}
 
       {/* Top fade */}
       <div
