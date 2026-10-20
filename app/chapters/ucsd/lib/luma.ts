@@ -69,8 +69,11 @@ export function cleanEventTitle(raw: string): string {
   return title || 'Builder Day';
 }
 
+/** Big events: hackathons, YC events, and headline partner events. Add a partner name here to promote it. */
+const MAJOR_EVENT = /hack|\bYC\b|Y Combinator|Telora/i;
+
 export function eventKind(title: string): UcsdEventKind {
-  if (/hack|\bYC\b|Y Combinator/i.test(title)) return 'major';
+  if (MAJOR_EVENT.test(title)) return 'major';
   if (title === 'Builder Day' || /lunch|dinner|meet\b/i.test(title)) return 'regular';
   return 'feature';
 }
