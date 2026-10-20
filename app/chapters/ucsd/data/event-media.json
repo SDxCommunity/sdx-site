@@ -35,6 +35,22 @@
   ],
   "past": [
     {
+      "id": "evt-lS6UimNyTtUL5vB",
+      "title": "SDxUCSD x Vyra (YC F26) Fireside Chat",
+      "date": "2026-10-18T23:00:00.000Z",
+      "timezone": "America/Los_Angeles",
+      "url": "https://luma.com/g45e5v96",
+      "accent": "#FAC205"
+    },
+    {
+      "id": "evt-WtTBtvfTfWC8PLP",
+      "title": "SDxUCSD Fall Quarter Kickoff",
+      "date": "2026-10-04T23:00:00.000Z",
+      "timezone": "America/Los_Angeles",
+      "url": "https://luma.com/sbm57xj6",
+      "accent": "#03C661"
+    },
+    {
       "id": "evt-kpE15ZMdVPHgiMy",
       "title": "SDxUCSD Agent Hackathon",
       "date": "2026-04-12T18:30:00.000Z",

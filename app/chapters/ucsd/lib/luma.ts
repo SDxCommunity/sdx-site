@@ -4,7 +4,13 @@ import { UCSD_LUMA_PAST } from './links';
 /** SDx @ UC San Diego Luma calendar — verified calendar_api_id */
 const UCSD_CALENDAR_API_ID = 'cal-KkffVW3dzHMQmAx';
 
-const LUMA_ITEMS_URL = 'https://api.lu.ma/calendar/get-items';
+/**
+ * The calendar's public subscription feed (iCalendar). It lists every past and
+ * upcoming event in one response. The JSON `calendar/get-items` endpoint used
+ * before started answering 429 to every caller in October 2026, and it also left
+ * out some events, such as the fall Kickoff.
+ */
+const UCSD_ICS_URL = `https://api.lu.ma/ics/get?entity=calendar&id=${UCSD_CALENDAR_API_ID}`;
 
 /** Sets the dot size and shade on the timeline: major > feature > regular. */
 export type UcsdEventKind = 'major' | 'feature' | 'regular';
@@ -13,7 +19,7 @@ export type UcsdEvent = {
   id: string;
   title: string;
   kind: UcsdEventKind;
-  /** ISO start_at */
+  /** ISO start time */
   date: string;
   endDate: string | null;
   timezone: string;
@@ -23,52 +29,12 @@ export type UcsdEvent = {
   location: string | null;
 };
 
-type LumaGeoAddressInfo = {
-  city_state?: string;
-  full_address?: string;
-  short_address?: string;
-};
-
-type LumaEvent = {
-  api_id: string;
-  name: string;
-  start_at: string;
-  end_at?: string;
-  timezone?: string;
-  url: string;
-  cover_url?: string;
-  geo_address_info?: LumaGeoAddressInfo;
-};
-
-type LumaEntry = {
-  api_id: string;
-  event: LumaEvent;
-};
-
-type LumaGetItemsResponse = {
-  entries: LumaEntry[];
-  has_more: boolean;
-};
-
 /**
- * Events the Luma calendar API does not return but that belong on the timeline:
- * ones run off the UCSD calendar, and ones the API has been seen to leave out.
- * An entry with a real Luma api_id is dropped when the API does return it.
+ * Events that are not on the UCSD Luma calendar but belong on the timeline.
+ * An entry with a real Luma event id is dropped when the feed returns it.
  * Dates are ISO start times.
  */
 const EXTRA_EVENTS: UcsdEvent[] = [
-  {
-    // On the UCSD calendar page, but missing from get-items as of 2026-10-14.
-    id: 'evt-WtTBtvfTfWC8PLP',
-    title: 'Fall Quarter Kickoff',
-    kind: 'feature',
-    date: '2026-10-04T23:00:00.000Z',
-    endDate: null,
-    timezone: 'America/Los_Angeles',
-    url: 'https://luma.com/sbm57xj6',
-    cover: null,
-    location: null,
-  },
   {
     // Run with YC, not on the UCSD Luma calendar. Noon Pacific keeps the shown date right.
     id: 'extra-yc-fireside-2026-02-01',
@@ -83,21 +49,31 @@ const EXTRA_EVENTS: UcsdEvent[] = [
   },
 ];
 
+const CHAPTER_NAME = String.raw`(?:SDx\s*@\s*UC San Diego|SDxUCSD|SDx)`;
+const JOINER = String.raw`(?:[-–—:]|x|×|<>)`;
+
 /**
- * Drops the chapter prefix from Luma titles. "SDx @ UC San Diego - Tom Zheng Fireside"
- * becomes "Tom Zheng Fireside". A bare "SDx @ UC San Diego" is the weekly Builder Day.
+ * Drops the chapter name from Luma titles. "SDx @ UC San Diego - Tom Zheng Fireside"
+ * becomes "Tom Zheng Fireside", "SDxUCSD x Vyra (YC F26) Fireside Chat" becomes
+ * "Vyra (YC F26) Fireside Chat", and "Telora <> SDxUCSD" becomes "Telora".
+ * A bare "SDx @ UC San Diego" is the weekly Builder Day.
  */
 export function cleanEventTitle(raw: string): string {
   const title = raw
-    .replace(/^\s*(SDx\s*@\s*UC San Diego|SDxUCSD|SDx)\b/i, '')
+    .replace(new RegExp(String.raw`^\s*${CHAPTER_NAME}\b`, 'i'), '')
+    .replace(new RegExp(String.raw`\s*${JOINER}\s*${CHAPTER_NAME}\s*$`, 'i'), '')
+    .replace(new RegExp(String.raw`^\s*${JOINER}\s+`, 'i'), '')
     .replace(/^\s*[-–—:]\s*/, '')
     .replace(/\s+/g, ' ')
     .trim();
   return title || 'Builder Day';
 }
 
+/** Big events: hackathons, YC events, and headline partner events. Add a partner name here to promote it. */
+const MAJOR_EVENT = /hack|\bYC\b|Y Combinator|Telora/i;
+
 export function eventKind(title: string): UcsdEventKind {
-  if (/hack|\bYC\b|Y Combinator/i.test(title)) return 'major';
+  if (MAJOR_EVENT.test(title)) return 'major';
   if (title === 'Builder Day' || /lunch|dinner|meet\b/i.test(title)) return 'regular';
   return 'feature';
 }
@@ -109,67 +85,82 @@ function withExtras(events: UcsdEvent[], filter: 'upcoming' | 'past'): UcsdEvent
   return [...events, ...extras.filter((e) => !known.has(e.id))];
 }
 
-function normalizeEntry(entry: LumaEntry): UcsdEvent | null {
-  const event = entry?.event;
-  if (!event || !event.api_id || !event.name || !event.start_at || !event.url) {
-    return null;
-  }
-
-  const location =
-    event.geo_address_info?.short_address ||
-    event.geo_address_info?.city_state ||
-    null;
-
-  const title = cleanEventTitle(event.name);
-
-  return {
-    id: event.api_id,
-    title,
-    kind: eventKind(title),
-    date: event.start_at,
-    endDate: event.end_at ?? null,
-    timezone: event.timezone || 'America/Los_Angeles',
-    url: `https://luma.com/${event.url}`,
-    cover: event.cover_url ?? null,
-    location,
-  };
+/** Undoes iCalendar text escaping: backslash before n (a line break), a comma, a semicolon, or a backslash. */
+function unescapeIcs(value: string): string {
+  return value.replace(/\\([nN,;\\])/g, (_, ch) => (ch === 'n' || ch === 'N' ? '\n' : ch));
 }
 
-/**
- * Last good response per period. Luma rate-limits quickly, and `next.revalidate`
- * does not cache in `next dev`, so without this every page load costs two calls.
- * When a call fails, the last good list beats the bundled fallback.
- */
-const MEMO_TTL_MS = 10 * 60 * 1000;
-const memo = new Map<'future' | 'past', { at: number; events: UcsdEvent[] }>();
+/** 20261102T180000Z or 20261102 to an ISO string. */
+function icsDateToIso(value: string): string | null {
+  const m = value.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})Z?)?$/);
+  if (!m) return null;
+  const [, y, mo, d, h = '00', mi = '00', se = '00'] = m;
+  return `${y}-${mo}-${d}T${h}:${mi}:${se}.000Z`;
+}
 
-async function fetchLumaItems(period: 'future' | 'past'): Promise<UcsdEvent[] | null> {
-  const cached = memo.get(period);
-  if (cached && Date.now() - cached.at < MEMO_TTL_MS) return cached.events;
-  const events = await fetchLumaItemsUncached(period);
-  if (events === null) return cached?.events ?? null;
-  memo.set(period, { at: Date.now(), events });
+/** Parses the Luma feed into events, skipping cancelled ones. */
+export function parseLumaIcs(ics: string): UcsdEvent[] {
+  // Unfold lines: a line break followed by a space or tab continues the previous line.
+  const text = ics.replace(/\r?\n[ \t]/g, '');
+  const events: UcsdEvent[] = [];
+
+  for (const block of text.split('BEGIN:VEVENT').slice(1)) {
+    const field = (name: string) => {
+      const m = block.match(new RegExp(`^${name}(?:;[^:\\r\\n]*)?:(.*)$`, 'm'));
+      return m ? unescapeIcs(m[1].trim()) : '';
+    };
+
+    if (field('STATUS').toUpperCase() === 'CANCELLED') continue;
+    const id = field('UID').replace(/@.*$/, '');
+    const summary = field('SUMMARY');
+    const date = icsDateToIso(field('DTSTART'));
+    if (!id || !summary || !date) continue;
+
+    // The description starts "Get up-to-date information at: https://luma.com/<slug>".
+    const link = field('DESCRIPTION').match(/https:\/\/(?:luma\.com|lu\.ma)\/(?!event\/)[A-Za-z0-9-]+/);
+    const title = cleanEventTitle(summary);
+
+    events.push({
+      id,
+      title,
+      kind: eventKind(title),
+      date,
+      endDate: icsDateToIso(field('DTEND')),
+      timezone: 'America/Los_Angeles',
+      url: link ? link[0].replace('https://lu.ma/', 'https://luma.com/') : `https://luma.com/event/${id}`,
+      cover: null,
+      location: field('LOCATION').split(',')[0] || null,
+    });
+  }
+
   return events;
 }
 
-async function fetchLumaItemsUncached(period: 'future' | 'past'): Promise<UcsdEvent[] | null> {
+/**
+ * Last good feed. `next.revalidate` does not cache in `next dev`, so without this
+ * every page load costs a call. When a call fails, the last good list beats the
+ * bundled fallback.
+ */
+const MEMO_TTL_MS = 10 * 60 * 1000;
+let memo: { at: number; events: UcsdEvent[] } | null = null;
+
+async function fetchCalendar(): Promise<UcsdEvent[] | null> {
+  if (memo && Date.now() - memo.at < MEMO_TTL_MS) return memo.events;
+  const events = await fetchCalendarUncached();
+  if (events === null) return memo?.events ?? null;
+  memo = { at: Date.now(), events };
+  return events;
+}
+
+async function fetchCalendarUncached(): Promise<UcsdEvent[] | null> {
   try {
-    const url = `${LUMA_ITEMS_URL}?calendar_api_id=${UCSD_CALENDAR_API_ID}&period=${period}&pagination_limit=50`;
-    const res = await fetch(url, {
-      headers: { accept: 'application/json' },
+    const res = await fetch(UCSD_ICS_URL, {
+      headers: { accept: 'text/calendar' },
       next: { revalidate: 3600 },
     });
-
     if (!res.ok) return null;
-
-    const data = (await res.json()) as LumaGetItemsResponse;
-    if (!data || !Array.isArray(data.entries)) return null;
-
-    const events = data.entries
-      .map(normalizeEntry)
-      .filter((e): e is UcsdEvent => e !== null);
-
-    return events;
+    const events = parseLumaIcs(await res.text());
+    return events.length > 0 ? events : null;
   } catch {
     return null;
   }
@@ -190,26 +181,29 @@ function fallbackPastEvents(): UcsdEvent[] {
 }
 
 /**
- * Upcoming or past events, plus whether the bundled fallback (rather than
- * the live Luma API) was used — consumed by the /api/chapters/ucsd/events route.
+ * Upcoming or past events, plus whether the bundled fallback (rather than the
+ * live Luma feed) was used — consumed by the /api/chapters/ucsd/events route.
+ * An event stays upcoming until it ends.
  */
 export async function getUcsdEventsWithFallbackStatus(
   filter: 'upcoming' | 'past'
 ): Promise<{ events: UcsdEvent[]; fallback: boolean }> {
+  const all = await fetchCalendar();
+  const now = new Date().toISOString();
+  const isUpcoming = (e: UcsdEvent) => (e.endDate ?? e.date) >= now;
+
   if (filter === 'upcoming') {
-    const events = await fetchLumaItems('future');
     return {
-      events: withExtras(events ?? [], 'upcoming').sort((a, b) => a.date.localeCompare(b.date)),
-      fallback: events === null,
+      events: withExtras((all ?? []).filter(isUpcoming), 'upcoming').sort((a, b) =>
+        a.date.localeCompare(b.date)
+      ),
+      fallback: all === null,
     };
   }
 
-  const events = await fetchLumaItems('past');
-  const usedFallback = events === null || events.length === 0;
-  const resolved = usedFallback ? fallbackPastEvents() : events;
-
+  const resolved = all === null ? fallbackPastEvents() : all.filter((e) => !isUpcoming(e));
   return {
     events: withExtras(resolved, 'past').sort((a, b) => b.date.localeCompare(a.date)),
-    fallback: usedFallback,
+    fallback: all === null,
   };
 }
