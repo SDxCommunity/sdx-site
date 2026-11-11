@@ -83,7 +83,7 @@ export const PEOPLE: Alum[] = [
     slug: "ryan-ni",
     name: "Ryan Ni",
     headline: "Building in stealth",
-    current: ["Building in stealth", "Events Director @ SDxUCSD"],
+    current: ["Building in stealth", "Events @ SDxUCSD"],
     previously: ["Founder @ Orca, backed by Lightyear (HF0 incubated residency)", "Software Engineer Intern @ Apple", "Top 5 of 1,500+ interns @ Apple iContest", "Top 5 @ OpenAI Codex Hackathon", "18x hackathon wins", "Research @ UC San Diego (Q Lab, XR Lab, LIL Lab)"],
     photo: "/people/ryan-ni.jpg",
     linkedin: "https://www.linkedin.com/in/ryan-ni",
