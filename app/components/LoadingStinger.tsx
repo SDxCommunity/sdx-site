@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useSelectedLayoutSegments } from 'next/navigation';
 
 const INITIAL_CELLS = [
   { x: '12%', y: '20%', d: '0.0s' },
@@ -17,7 +18,7 @@ const INITIAL_CELLS = [
   { x: '60%', y: '60%', d: '0.1s' },
 ];
 
-const LoadingStinger: React.FC = () => {
+const Stinger: React.FC = () => {
   const [phase, setPhase] = useState<'building' | 'built' | 'exit' | 'done'>('building');
   const [cells, setCells] = useState(INITIAL_CELLS);
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -159,6 +160,17 @@ const LoadingStinger: React.FC = () => {
       </div>
     </div>
   );
+};
+
+/**
+ * The "building... built." intro on first load. The UCSD chapter skips it.
+ * Route segments, not the pathname, identify the chapter: ucsd.sdx.community
+ * rewrites "/" to /chapters/ucsd, and only the segments see the rewritten route.
+ */
+const LoadingStinger: React.FC = () => {
+  const segments = useSelectedLayoutSegments();
+  if (segments[0] === 'chapters' && segments[1] === 'ucsd') return null;
+  return <Stinger />;
 };
 
 export default LoadingStinger;
