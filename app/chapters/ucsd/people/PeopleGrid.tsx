@@ -8,26 +8,26 @@ import Portrait from './Portrait';
 import { Bullets, Links, iconButton } from './ProfileParts';
 import type { Alum } from './people';
 
-// The negative top margin lifts the tallest letters to the corner inset, level with the close X.
-const titleClass = '-mt-[0.09em] pr-10 text-3xl md:text-5xl text-white tracking-tight leading-[1.05]';
+const titleClass = 'text-3xl md:text-5xl text-white tracking-tight leading-[1.05]';
 
 /**
  * The full profile in the dialog. Every person's text sits in the same grid
  * cell, with all but the open one hidden, so the card always takes the height
  * of the longest profile: nothing scrolls, and the controls never move. The
- * name, links, arrows, and close button sit in the four corners at one inset.
+ * close button, links, and arrows sit in their corners at one inset; the name and
+ * lists sit in from the corner with roomier padding.
  */
 function Profile({ people, shown, onStep }: { people: Alum[]; shown: number; onStep: (delta: number) => void }) {
   const person = people[shown];
 
   return (
     <div className="flex flex-col md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-      <div className="relative h-40 shrink-0 overflow-hidden bg-white/[0.02] md:h-auto">
+      <div className="relative h-36 shrink-0 overflow-hidden bg-white/[0.02] md:h-auto">
         <Portrait person={person} className="absolute inset-0 h-full w-full" />
       </div>
 
       <div className="flex flex-col">
-        <div className="grid flex-1 px-4 pt-4">
+        <div className="grid flex-1 px-6 pt-6 md:px-10 md:pt-10">
           {people.map((p, i) => {
             const active = i === shown;
             return (
