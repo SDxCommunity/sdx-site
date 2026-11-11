@@ -29,8 +29,8 @@ export default function About() {
               </h2>
               <ul className="mt-8 space-y-4 text-sm md:text-base text-white/70 leading-relaxed max-w-md list-disc pl-5 marker:text-white/40">
                 <li>
-                  Host weekly builder days and demo days, where students show what they are
-                  building with AI and get feedback from peers
+                  Host weekly demo days, where students show what they are building with AI
+                  and get feedback from peers
                 </li>
                 <li>
                   Organize hackathons with partners like Vercel, Perplexity, Groq, and HelixDB,
