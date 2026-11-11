@@ -30,6 +30,9 @@ const Navigation: React.FC = () => {
   const onUcsdChapter = segments[0] === 'chapters' && segments[1] === 'ucsd';
   const joinHref = onUcsdChapter ? UCSD_JOIN : MAIN_JOIN_URL;
 
+  // The UCSD people lookbook fills the screen, so it has no top bar.
+  if (onUcsdChapter && segments[2] === 'people') return null;
+
   const handleLinkClick = (linkUrl: string) => {
     sendGAEvent('clicked', { link_url: linkUrl });
     setIsMenuOpen(false);

@@ -19,6 +19,9 @@ const Footer: React.FC = () => {
     ? 'text-sm font-bold text-white mb-4'
     : 'text-xs uppercase tracking-widest text-white/60 mb-4';
 
+  // The UCSD people lookbook stands alone, with no footer.
+  if (onUcsdChapter && segments[2] === 'people') return null;
+
   const handleLinkClick = (linkUrl: string, label: string) => {
     sendGAEvent('clicked', { link_url: linkUrl, label });
   };
