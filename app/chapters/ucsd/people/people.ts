@@ -20,6 +20,8 @@ export type Alum = {
   x?: string;
   github?: string;
   website?: string;
+  /** Kept in the data but left off the page. Delete the line to show them again. */
+  hidden?: boolean;
 };
 
 export const PEOPLE: Alum[] = [
@@ -82,7 +84,7 @@ export const PEOPLE: Alum[] = [
     name: "Ryan Ni",
     headline: "Building in stealth",
     current: ["Building in stealth", "Events Director @ SDxUCSD"],
-    previously: ["Founder @ Orca", "Founder Residency @ Lightyear", "Software Engineer Intern @ Apple", "Top 5 of 1,500+ interns @ Apple iContest", "Top 5 @ OpenAI Codex Hackathon", "Research Lead @ Q Lab", "UC San Diego XR Lab"],
+    previously: ["Founder @ Orca, backed by Lightyear (HF0 incubated residency)", "Software Engineer Intern @ Apple", "Top 5 of 1,500+ interns @ Apple iContest", "Top 5 @ OpenAI Codex Hackathon", "18x hackathon wins", "Research @ UC San Diego (Q Lab, XR Lab, LIL Lab)"],
     photo: "/people/ryan-ni.jpg",
     linkedin: "https://www.linkedin.com/in/ryan-ni",
     x: "https://x.com/ryanxani",
@@ -132,6 +134,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "eddie-jin",
+    hidden: true,
     name: "Eddie Jin",
     headline: "Investor @ BoxGroup",
     current: ["Investor @ BoxGroup"],
@@ -252,6 +255,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "alex-hamidi",
+    hidden: true,
     name: "Alex Hamidi",
     headline: "Building in stealth",
     current: ["Building in stealth"],

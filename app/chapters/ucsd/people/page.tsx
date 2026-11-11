@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function UCSDPeoplePage() {
   return (
     <main className={`${GeistSerif.className} max-w-5xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-24`}>
-      <PeopleGrid people={PEOPLE} />
+      <PeopleGrid people={PEOPLE.filter((person) => !person.hidden)} />
     </main>
   );
 }
