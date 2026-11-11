@@ -3,12 +3,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { GeistSerif } from 'geist/font/serif';
-import { ArrowLeft, ArrowRight, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Portrait from './Portrait';
 import { Bullets, Links, iconButton } from './ProfileParts';
 import type { Alum } from './people';
 
-const titleClass = 'pr-10 text-3xl md:text-5xl text-white tracking-tight leading-[1.05]';
+// The negative top margin lifts the tallest letters to the corner inset, level with the close X.
+const titleClass = '-mt-[0.09em] pr-10 text-3xl md:text-5xl text-white tracking-tight leading-[1.05]';
 
 /**
  * The full profile in the dialog. Every person's text sits in the same grid
@@ -40,7 +41,7 @@ function Profile({ people, shown, onStep }: { people: Alum[]; shown: number; onS
                 ) : (
                   <p className={titleClass}>{p.name}</p>
                 )}
-                <div className="mt-4 md:mt-6">
+                <div className="mt-3 md:mt-5">
                   <Bullets person={p} />
                 </div>
               </div>
@@ -132,11 +133,17 @@ export default function PeopleGrid({ people }: { people: Alum[] }) {
                 if (e.key === 'ArrowRight') step(1);
                 if (e.key === 'ArrowLeft') step(-1);
               }}
-              className={`${GeistSerif.className} relative m-auto w-full max-w-4xl overflow-hidden rounded-lg border border-white/10 bg-black duration-150 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95`}
+              className={`${GeistSerif.className} relative m-auto w-full max-w-5xl overflow-hidden rounded-lg border border-white/10 bg-black duration-150 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95`}
             >
               <Profile people={people} shown={shown} onStep={step} />
-              <Dialog.Close aria-label="Close" className={`absolute right-4 top-4 bg-black/60 ${iconButton}`}>
-                <X className="h-4 w-4" strokeWidth={1.75} />
+              {/* A bare X, no box. The padding is hit area only; the glyph's edges sit at the corner inset. */}
+              <Dialog.Close
+                aria-label="Close"
+                className="absolute right-2 top-2 p-2 text-white/60 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] transition-colors duration-150 hover:text-white"
+              >
+                <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" aria-hidden="true">
+                  <path d="M1 1l14 14M15 1L1 15" />
+                </svg>
               </Dialog.Close>
             </Dialog.Content>
           </Dialog.Overlay>
