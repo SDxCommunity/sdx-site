@@ -40,7 +40,7 @@ function Section({ title, lines, tone }: { title: string; lines: string[]; tone:
 /** "Currently" first, then "Previously", each an indented list with a dot per line. */
 export function Bullets({ person }: { person: Alum }) {
   return (
-    <div className="space-y-3 text-[13px] leading-snug md:space-y-5 md:text-base md:leading-relaxed">
+    <div className="space-y-3 text-[13px] leading-snug md:space-y-5 md:text-base md:leading-normal">
       <Section title="Currently" lines={person.current} tone="text-white/90" />
       {person.previously.length > 0 && <Section title="Previously" lines={person.previously} tone="text-white/70" />}
     </div>
