@@ -203,7 +203,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "matthew-lu",
-    name: "Matthew J Lu",
+    name: "Matthew Lu",
     headline: "Software Engineer Intern @ Apple",
     current: ["Software Engineer Intern @ Apple", "M.S. Computer Science @ Stanford"],
     previously: ["Hackathon Director @ DiamondHacks", "Software Engineer Intern @ MathWorks", "San Diego Supercomputer Center"],
