@@ -256,6 +256,7 @@ export const PEOPLE: Alum[] = [
     headline: "Building in stealth",
     current: ["Building in stealth"],
     previously: ["Engineer @ Freesolo (formerly Clado, YC X25)", "Amazon Web Services", "Research @ Shang Data Lab", "Research @ Scripps Institution of Oceanography"],
+    photo: "/people/alex-hamidi.jpg",
     linkedin: "https://www.linkedin.com/in/alexander-hamidi-208736254/",
     github: "https://github.com/alexhamidi",
   },
