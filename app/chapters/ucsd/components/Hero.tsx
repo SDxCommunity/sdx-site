@@ -5,11 +5,9 @@ import { m, useScroll, useTransform } from 'motion/react';
 import { EASE_SOFT } from '@/lib/motion';
 import BackgroundEffects from '@/app/components/BackgroundEffects';
 import MetaballCanvas from '@/app/components/MetaballCanvas';
+import StaggerTitle from '@/app/components/StaggerTitle';
 import SpecStrip from './SpecStrip';
 import JoinRow from './JoinRow';
-import styles from './Hero.module.css';
-
-const TITLE = 'SDxUCSD';
 
 export default function Hero() {
   const d = (_stingerDelay: number, navDelay: number) => navDelay;
@@ -44,21 +42,11 @@ export default function Hero() {
         {/* The blob field clears an area around this block, so blobs wrap the copy */}
         <div ref={copyRef} className="flex flex-col items-center">
           {/* Headline — letter-staggered, UCSD outlined per chapter naming */}
-          <h1
-            aria-label="SDxUCSD"
-            className="relative font-display text-[clamp(3.25rem,12.5vw,10.5rem)] leading-[0.95] tracking-tight prismatic-glow select-none"
-          >
-            {TITLE.split('').map((ch, i) => (
-              <span
-                key={i}
-                aria-hidden="true"
-                className={`${styles.letter} ${i < 3 ? 'text-white' : 'text-outline'}`}
-                style={{ '--letter-delay': `${(0.2 + i * 0.055).toFixed(3)}s` } as React.CSSProperties}
-              >
-                {ch}
-              </span>
-            ))}
-          </h1>
+          <StaggerTitle
+            text="SDxUCSD"
+            outlineFrom={3}
+            className="relative font-display text-[clamp(3.25rem,12.5vw,10.5rem)] leading-[0.95] tracking-tight text-white prismatic-glow select-none"
+          />
 
           {/* Subhead */}
           <m.p

@@ -2,191 +2,217 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { MapPin, ExternalLink, Mail } from 'lucide-react';
-import SectionHeader from '@/app/components/SectionHeader';
+import PageHeader from '@/app/components/PageHeader';
+import SectionTitle from '@/app/components/SectionTitle';
+import ArrowLink from '@/app/components/ArrowLink';
 import ChapterName from '@/app/components/ChapterName';
-import PrismaticCanvas from '@/app/components/PrismaticCanvas';
+import ClosingCta from '@/app/components/ClosingCta';
+import AsciiButton from '@/app/components/AsciiButton';
 import MotionSection from '@/app/components/motion/MotionSection';
 import MotionGrid from '@/app/components/motion/MotionGrid';
 import MotionCard from '@/app/components/motion/MotionCard';
 import MotionButton from '@/app/components/motion/MotionButton';
-import AsciiButton from '@/app/components/AsciiButton';
+import { SDX_EMAIL, SDX_LUMA } from '@/lib/links';
 
-const chapters = [
+type Chapter = {
+  id: string;
+  name: string;
+  university: string;
+  memberCount: string;
+  founded: string;
+  founder: string;
+  description: string;
+  /** The chapter's own page, when it has one. */
+  href?: string;
+  contactEmail: string;
+  /** Color of the glow in the card's corner. */
+  accent: string;
+};
+
+const chapters: Chapter[] = [
   {
-    id: "ucsd",
-    name: "SDxUCSD",
-    university: "UC San Diego",
-    location: "San Diego, CA",
-    status: "active",
-    memberCount: "50+",
-    founded: "2024",
-    founder: "Dhruv Kanetkar",
-    description: "The flagship chapter. An invite-only community where the best UCSD students building with AI share their latest experiments and projects.",
-    href: "/chapters/ucsd",
-    contactEmail: "ucsd@sdx.community",
+    id: 'ucsd',
+    name: 'SDxUCSD',
+    university: 'UC San Diego',
+    memberCount: '50+',
+    founded: '2024',
+    founder: 'Dhruv Kanetkar',
+    description:
+      'The flagship chapter. An invite-only community where the best UCSD students building with AI share their latest experiments and projects.',
+    href: '/chapters/ucsd',
+    contactEmail: 'ucsd@sdx.community',
+    accent: 'rgba(17,187,205,0.16)',
   },
   {
-    id: "sdsu",
-    name: "SDxSDSU",
-    university: "San Diego State University",
-    location: "San Diego, CA",
-    status: "active",
-    memberCount: "New",
-    founded: "2026",
-    founder: "Matt Attardo",
-    description: "Expanding SDx's presence with SDSU's vibrant student community. Builder-first programming for Aztec engineers and creators.",
-    href: "#",
-    contactEmail: "hello@sdx.community",
+    id: 'sdsu',
+    name: 'SDxSDSU',
+    university: 'San Diego State University',
+    memberCount: 'New',
+    founded: '2026',
+    founder: 'Matt Attardo',
+    description:
+      "Expanding SDx's presence with SDSU's vibrant student community. Builder-first programming for Aztec engineers and creators.",
+    contactEmail: SDX_EMAIL,
+    accent: 'rgba(3,85,147,0.28)',
   },
 ];
 
 const plannedChapters = [
   {
-    name: "SDxUSD",
-    university: "University of San Diego",
+    name: 'SDxUSD',
+    university: 'University of San Diego',
     description: "Planned launch 2026 or 2027. Bringing SDx to USD's campus community.",
   },
 ];
 
+const reasons = [
+  {
+    n: '01',
+    color: '#D92C2D',
+    title: 'Build on campus',
+    desc: 'Peer community for learning and building together. Lower the barrier to entry for first-time builders.',
+  },
+  {
+    n: '02',
+    color: '#FAC205',
+    title: 'Events and demos',
+    desc: 'Chapter-specific Hack Days, demo sessions, and Paper Club discussions.',
+  },
+  {
+    n: '03',
+    color: '#11BBCD',
+    title: 'Pipeline to SDx',
+    desc: 'Connect to the broader ecosystem. Mentors, events, partners, and a reason to stay in San Diego after graduation.',
+  },
+];
+
+function ChapterCard({ chapter }: { chapter: Chapter }) {
+  return (
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-black p-7 md:p-9 transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-white/25">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: `radial-gradient(ellipse 70% 60% at 100% 0%, ${chapter.accent}, transparent 70%)` }}
+        aria-hidden="true"
+      />
+
+      <div className="relative flex flex-1 flex-col">
+        <h3 className="font-display text-5xl md:text-6xl text-white tracking-tight leading-none">
+          <ChapterName name={chapter.name} />
+        </h3>
+        <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm md:text-base text-white/55">
+          {chapter.university}
+          <span className="inline-flex items-center gap-2 text-white/70">
+            <span className="h-1.5 w-1.5 rounded-full bg-sdx-teal" aria-hidden="true" />
+            Active
+          </span>
+        </p>
+
+        <p className="mt-6 text-sm md:text-base leading-relaxed text-white/70">{chapter.description}</p>
+
+        <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-white/10 pt-5 text-sm">
+          <div>
+            <dt className="text-white/45">Members</dt>
+            <dd className="mt-1 text-white/85">{chapter.memberCount}</dd>
+          </div>
+          <div>
+            <dt className="text-white/45">Founded</dt>
+            <dd className="mt-1 text-white/85">{chapter.founded}</dd>
+          </div>
+          <div>
+            <dt className="text-white/45">Founder</dt>
+            <dd className="mt-1 text-white/85">{chapter.founder}</dd>
+          </div>
+        </dl>
+
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 pt-1">
+          {chapter.href && <ArrowLink href={chapter.href}>Visit {chapter.name}</ArrowLink>}
+          <ArrowLink href={`mailto:${chapter.contactEmail}`}>Contact</ArrowLink>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export default function ChaptersPage() {
   return (
-    <main className="relative pt-24 px-4 sm:px-6 lg:px-8">
-      {/* Ghosted letterform */}
-      <div className="absolute right-0 top-0 bottom-0 w-[50vw] overflow-hidden" aria-hidden="true">
-        <div className="absolute -right-[20%] top-[30%] -translate-y-1/2 font-display text-[40vw] ghosted-letterform rotate-90 whitespace-nowrap">
-          SDx
-        </div>
-      </div>
-      <div className="max-w-7xl mx-auto py-12 relative z-[1]">
-        <SectionHeader
-          title="Chapters"
-          subtitle="SDx university chapters bring builders together on campus. Same energy, same values, local community."
-          badge="University"
-        />
+    <main className="relative">
+      <PageHeader
+        title="Chapters"
+        subtitle="SDx university chapters bring builders together on campus. Same energy, same values, local community."
+      />
 
-        {/* Active Chapters */}
-        <div className="mb-16">
-          <h2 className="font-display text-2xl text-white mb-6">Active</h2>
-          <MotionGrid className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {chapters.map(chapter => (
-              <MotionCard key={chapter.id}>
-                <Link href={chapter.href !== '#' ? chapter.href : `mailto:${chapter.contactEmail}`} className="block group">
-                  <Card className="h-full transition-colors duration-200 group-hover:border-white/20">
-                    <CardContent className="p-6 flex flex-col h-full">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <CardTitle className="text-3xl md:text-4xl"><ChapterName name={chapter.name} /></CardTitle>
-                          <p className="text-sm text-white/40 mt-0.5">{chapter.university}</p>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-1.5 h-1.5 rounded-full bg-sdx-teal" />
-                          <span className="text-xs uppercase tracking-widest text-white/30">Active</span>
-                        </div>
-                      </div>
+      {/* Active chapters */}
+      <section className="relative px-4 sm:px-6 lg:px-8 pb-14 md:pb-16">
+        <div className="max-w-6xl mx-auto">
+          <MotionGrid className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {chapters.map((chapter) => (
+              <MotionCard key={chapter.id} enableHover={false}>
+                <ChapterCard chapter={chapter} />
+              </MotionCard>
+            ))}
+          </MotionGrid>
 
-                      <p className="text-sm text-white/40 leading-relaxed mb-4">{chapter.description}</p>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <Badge variant="outline">{chapter.memberCount} members</Badge>
-                        <Badge variant="outline">Founded {chapter.founded}</Badge>
-                        <Badge variant="outline">{chapter.founder}</Badge>
-                      </div>
-
-                      <div className="mt-auto flex items-center justify-end gap-3">
-                        {chapter.href !== '#' && (
-                          <span className="btn-secondary px-4 py-1.5 text-xs uppercase tracking-widest rounded-sm">
-                            Learn more &rarr;
-                          </span>
-                        )}
-                        <span
-                          onClick={(e) => { e.preventDefault(); window.location.href = `mailto:${chapter.contactEmail}`; }}
-                          className="btn-secondary px-4 py-1.5 text-xs uppercase tracking-widest rounded-sm flex items-center gap-1"
-                        >
-                          <Mail className="w-3 h-3" />
-                          Contact
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+          {/* Planned */}
+          <MotionGrid className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {plannedChapters.map((chapter) => (
+              <MotionCard key={chapter.name} enableHover={false}>
+                <article className="flex h-full flex-col rounded-lg border border-dashed border-white/15 p-7 md:p-9">
+                  <h3 className="font-display text-4xl md:text-5xl text-white/80 tracking-tight leading-none">
+                    <ChapterName name={chapter.name} />
+                  </h3>
+                  <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm md:text-base text-white/50">
+                    {chapter.university}
+                    <span className="inline-flex items-center gap-2 text-white/55">
+                      <span className="h-1.5 w-1.5 rounded-full border border-dashed border-white/60" aria-hidden="true" />
+                      Planned
+                    </span>
+                  </p>
+                  <p className="mt-6 text-sm md:text-base leading-relaxed text-white/60">{chapter.description}</p>
+                </article>
               </MotionCard>
             ))}
           </MotionGrid>
         </div>
+      </section>
 
-        {/* Planned */}
-        <div className="mb-16">
-          <h2 className="font-display text-2xl text-white mb-6">Planned</h2>
-          <MotionGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {plannedChapters.map((chapter, index) => (
-              <MotionCard key={index}>
-                <Card className="opacity-60">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <CardTitle className="text-3xl md:text-4xl"><ChapterName name={chapter.name} /></CardTitle>
-                      <Badge variant="outline">Planned</Badge>
-                    </div>
-                    <p className="text-sm text-white/40 leading-relaxed">{chapter.description}</p>
-                  </CardContent>
-                </Card>
+      {/* Why join */}
+      <section className="relative py-14 md:py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <MotionSection>
+            <SectionTitle>Why join a chapter</SectionTitle>
+          </MotionSection>
+
+          <MotionGrid className="mt-10 border-t border-white/[0.06]" staggerDelay={0.06}>
+            {reasons.map((reason) => (
+              <MotionCard key={reason.n} enableHover={false}>
+                <div className="grid grid-cols-[auto_1fr] md:grid-cols-[auto_minmax(0,1fr)_minmax(0,28rem)] items-baseline gap-x-4 md:gap-x-8 gap-y-1 py-5 md:py-6 border-b border-white/[0.06]">
+                  <span className="font-mono text-[10px] md:text-xs font-bold" style={{ color: reason.color }}>
+                    {reason.n}
+                  </span>
+                  <h3 className="font-display text-2xl md:text-3xl text-white/90 tracking-tight">{reason.title}</h3>
+                  <p className="col-start-2 md:col-start-3 text-sm md:text-base leading-relaxed text-white/60">
+                    {reason.desc}
+                  </p>
+                </div>
               </MotionCard>
             ))}
           </MotionGrid>
         </div>
+      </section>
 
-        {/* Why Join */}
-        <div className="mb-16">
-          <h2 className="font-display text-2xl text-white mb-6">Why join a chapter</h2>
-          <MotionGrid className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { title: 'Build on campus', desc: 'Peer community for learning and building together. Lower the barrier to entry for first-time builders.' },
-              { title: 'Events & demos', desc: 'Chapter-specific Hack Days, demo sessions, and Paper Club discussions.' },
-              { title: 'Pipeline to SDx', desc: 'Connect to the broader ecosystem. Mentors, events, partners, and a reason to stay in San Diego after graduation.' },
-            ].map((item) => (
-              <MotionCard key={item.title}>
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="text-sm font-bold text-white mb-2">{item.title}</h3>
-                    <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
-                  </CardContent>
-                </Card>
-              </MotionCard>
-            ))}
-          </MotionGrid>
+      <ClosingCta
+        heading="Start a chapter."
+        sub="Want to bring SDx to your university? We're looking for builders who want to lead."
+      >
+        <div className="flex flex-col items-center gap-6">
+          <MotionButton className="inline-block">
+            <Link href={`mailto:${SDX_EMAIL}?subject=Start a New Chapter`} className="block">
+              <AsciiButton>Start a chapter</AsciiButton>
+            </Link>
+          </MotionButton>
+          <ArrowLink href={SDX_LUMA}>Join the main community</ArrowLink>
         </div>
-
-      </div>
-
-      {/* Start a Chapter CTA — full width, break out of parent padding */}
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 relative overflow-hidden border-t border-white/5 pt-16 pb-16 text-center">
-        <PrismaticCanvas intensity="subtle" />
-        <MotionSection className="relative z-10 px-4 sm:px-6 lg:px-8">
-          <h2 className="font-display text-2xl text-white mb-3 prismatic-glow-sm">Start a chapter.</h2>
-          <p className="text-sm text-white/40 mb-6 max-w-md mx-auto">
-            Interested in bringing SDx to your university? We&apos;re looking for builders who want to lead.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <MotionButton className="inline-block">
-              <Link href="mailto:hello@sdx.community?subject=Start a New Chapter" className="block">
-                <AsciiButton>Start a Chapter</AsciiButton>
-              </Link>
-            </MotionButton>
-            <MotionButton className="inline-block">
-              <Link
-                href="https://lu.ma/sdx"
-                target="_blank"
-                className="block btn-secondary px-6 py-2 text-xs uppercase tracking-widest rounded-sm transition-shadow duration-200"
-              >
-                Join Main Community
-              </Link>
-            </MotionButton>
-          </div>
-        </MotionSection>
-      </div>
+      </ClosingCta>
     </main>
   );
 }

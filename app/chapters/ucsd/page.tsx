@@ -5,7 +5,7 @@ import Hero from './components/Hero';
 import About from './components/About';
 import PastEvents from './components/PastEvents';
 import StartBuilding from './components/StartBuilding';
-import AsciiDrift from './components/AsciiDrift';
+import AsciiDrift from '@/app/components/AsciiDrift';
 
 export default function UCSDChapterPage() {
   return (

@@ -1,16 +1,16 @@
 /*
- * Pure-CSS replacement for the per-letter motion stagger on the hero H1.
+ * Pure-CSS per-letter rise for display titles.
  *
  * The letters are server-rendered as plain <span> elements so the LCP text
  * paints without waiting on the motion JS bundle to boot/hydrate. The
- * keyframe mirrors the previous framer-motion values exactly:
+ * keyframe mirrors the earlier framer-motion values exactly:
  *   initial: { opacity: 0, y: '0.4em' }
  *   animate: { opacity: 1, y: 0 }
  *   transition: { duration: 1.1s, ease: cubic-bezier(0.16, 1, 0.3, 1) }
  * Per-letter delay is passed in via the --letter-delay custom property.
  */
 
-@keyframes ucsdHeroLetterIn {
+@keyframes sdxLetterIn {
   from {
     opacity: 0;
     transform: translateY(0.4em);
@@ -25,7 +25,7 @@
   display: inline-block;
   opacity: 0;
   transform: translateY(0.4em);
-  animation-name: ucsdHeroLetterIn;
+  animation-name: sdxLetterIn;
   animation-duration: 1.1s;
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   animation-fill-mode: both;
