@@ -3,7 +3,8 @@
  * first, then a hand-picked list, then everyone else; people without photos last.
  * Source: the two Community databases in the SDxUCSD Notion (pulled 2026-11-10).
  * Photos live in public/people/<slug>.jpg; most are the Notion page icons, saved
- * from LinkedIn on 2026-11-11. X and GitHub links come from each person's own site.
+ * from LinkedIn on 2026-11-11. X and GitHub links come from each person's own site,
+ * GitHub profile, or an X bio that names their company (checked 2026-11-11).
  */
 
 export type Alum = {
@@ -30,6 +31,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Advisor @ SDxUCSD", "Cerebras Systems"],
     photo: "/people/tom-zheng.jpg",
     linkedin: "https://www.linkedin.com/in/tomzhengy",
+    x: "https://x.com/tomzheng",
     website: "https://freesolo.co",
   },
   {
@@ -40,6 +42,7 @@ export const PEOPLE: Alum[] = [
     previously: ["AI Research Engineer @ Beem", "Software Engineer @ Dimension", "Foundation Interfaces Lab", "Inseek", "OnDeck Fellows", "Software Engineer Intern and Event Engineer @ Hack Club", "Open Source Partnerships Lead and Regional Manager @ CodeDay", "Full Stack Engineer Intern @ Hack+"],
     photo: "/people/shubham-patil.jpg",
     linkedin: "https://www.linkedin.com/in/shubhampatilsd/",
+    x: "https://x.com/shubhampatilsd",
     website: "https://mosaic.inc",
   },
   {
@@ -50,6 +53,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Software Engineer Intern and Cast @ Ruangguru", "Diffusion research @ Algoverse (AAAI workshop)", "Honorable Mention @ International Physics Olympiad 2024", "Junior Academy @ New York Academy of Sciences", "Global STEM Accelerators @ AFS (1 of 180)", "Learning Development Intern @ TamanSchool"],
     photo: "/people/clarissa-saputra.jpg",
     linkedin: "https://www.linkedin.com/in/clarisssaans/",
+    x: "https://x.com/0xCL4R",
     website: "https://www.tryclean.ai",
   },
   {
@@ -60,6 +64,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Founder @ SDxUCSD", "Partner @ SDx", "Founding AI Manager and Forward Deployed Engineer @ Cadre AI", "Co-founder @ Declass AI", "Founder @ fynspo", "Contract AI Developer @ Qualcomm", "Summer Research Intern @ UC San Diego Design Lab", "Project Manager @ Triton Consulting Group", "Lead Full Stack Developer @ Sandlines USA", "Research Data Science Intern @ UC Berkeley"],
     photo: "/people/dhruv-kanetkar.jpg",
     linkedin: "https://www.linkedin.com/in/dhruv-kanetkar/",
+    x: "https://x.com/dkanetkar",
     github: "https://github.com/DhruvK0",
   },
   {
@@ -101,6 +106,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Founding Engineer @ Wayframe", "Hackathon Director @ ACM at UC San Diego", "Software Engineer Intern @ Aspect", "Software Engineer Intern @ Letta", "Software Engineer @ Qualcomm Institute", "Co-founder @ Davis Engineering Team"],
     photo: "/people/david-wang.jpg",
     linkedin: "https://www.linkedin.com/in/davidwang1089/",
+    x: "https://x.com/davidxwangg",
     github: "https://github.com/dwang88",
   },
   {
@@ -132,6 +138,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Fellow @ 8VC", "Product @ Armada", "Partner @ Dorm Room Fund", "Summer Analyst @ Spero Ventures", "Crescent Fund", "Product @ Fileread", "Lead @ Triton Ventures"],
     photo: "/people/eddie-jin.jpg",
     linkedin: "https://www.linkedin.com/in/eddieejin/",
+    x: "https://x.com/eddieejin",
     website: "https://www.boxgroup.com/team",
   },
   {
@@ -142,6 +149,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Director @ SDxUCSD", "Software Development Intern @ Amazon Web Services", "Software Engineer @ UC San Diego IT Services", "Instructional Assistant @ UC San Diego CSE", "AI Student Engineer @ Intel", "Venture Scout @ Anthos Capital", "Hackathon Director @ TritonHacks"],
     photo: "/people/keerthi-nalabotu.jpg",
     linkedin: "https://www.linkedin.com/in/keerthi-nalabotu/",
+    x: "https://x.com/keerthinalabotu",
     website: "https://trueventures.com/team/keerthi-nalabotu",
   },
   {
