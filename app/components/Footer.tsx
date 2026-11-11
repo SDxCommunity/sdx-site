@@ -14,7 +14,7 @@ const FooterCanvas = dynamic(() => import('./FooterCanvas'), { ssr: false });
 const MAIN_SITE = 'https://www.sdx.community';
 const CONTACT_EMAIL = 'hello@sdx.community';
 
-const headingClass = 'text-base font-bold text-white mb-4';
+const headingClass = 'text-sm font-bold text-white mb-4';
 const linkClass = 'text-white/70 hover:text-white transition-colors duration-200';
 
 const Footer: React.FC = () => {
