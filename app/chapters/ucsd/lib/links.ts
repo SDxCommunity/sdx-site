@@ -5,6 +5,7 @@ export const UCSD_LUMA_PAST = `${UCSD_LUMA}?period=past`;
 export const UCSD_EMAIL = 'ucsd@sdx.community';
 export const UCSD_INSTAGRAM = 'https://www.instagram.com/sdx.at.ucsd/';
 export const UCSD_LINKEDIN = 'https://www.linkedin.com/company/sdx-ucsd/';
+export const UCSD_DISCORD = 'https://discord.gg/Y7ME6kQAye';
 
 /** Every "Join" button on the chapter opens the Luma calendar. */
 export const UCSD_JOIN = UCSD_LUMA;
