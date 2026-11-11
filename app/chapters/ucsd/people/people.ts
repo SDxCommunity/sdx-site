@@ -2,9 +2,8 @@
  * People in the SDxUCSD lookbook, in the order the club chose: YC founders
  * first, then a hand-picked list, then everyone else; people without photos last.
  * Source: the two Community databases in the SDxUCSD Notion (pulled 2026-11-10).
- * Photos are LinkedIn CDN URLs copied from the Notion page icons. They expire
- * on 2 December 2026, so host copies before this page goes live. Local photos
- * live in public/people/<slug>.jpg.
+ * Photos live in public/people/<slug>.jpg; most are the Notion page icons, saved
+ * from LinkedIn on 2026-11-11. X and GitHub links come from each person's own site.
  */
 
 export type Alum = {
@@ -17,6 +16,8 @@ export type Alum = {
   previously: string[];
   photo?: string;
   linkedin?: string;
+  x?: string;
+  github?: string;
   website?: string;
 };
 
@@ -27,7 +28,7 @@ export const PEOPLE: Alum[] = [
     headline: "Co-founder and CTO @ Freesolo",
     current: ["Co-founder and CTO @ Freesolo, formerly Clado (YC X25)"],
     previously: ["Cerebras Systems", "SDxUCSD"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQE8FRGs3GfdtQ/profile-displayphoto-scale_400_400/B56ZgffrclH0Ak-/0/1752875055498?e=1796256000&v=beta&t=LMT6WHA3yyXzxKRsyTc1LelicbAibNn_p-ShgtDhppw",
+    photo: "/people/tom-zheng.jpg",
     linkedin: "https://www.linkedin.com/in/tomzhengy",
     website: "https://freesolo.co",
   },
@@ -37,7 +38,7 @@ export const PEOPLE: Alum[] = [
     headline: "Co-founder @ Mosaic",
     current: ["Co-founder @ Mosaic (YC S26)"],
     previously: ["Foundation Interfaces Lab", "OnDeck Fellows", "Hack Club", "CodeDay"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQH_SnkIVNZNVw/profile-displayphoto-shrink_400_400/B56ZaK1Hp6GkAo-/0/1746085903287?e=1796256000&v=beta&t=WF-aPqOE56lqrxNkizHmjPgtzz1v6jHfr0Gd9xm0u64",
+    photo: "/people/shubham-patil.jpg",
     linkedin: "https://www.linkedin.com/in/shubhampatilsd/",
     website: "https://mosaic.inc",
   },
@@ -47,7 +48,7 @@ export const PEOPLE: Alum[] = [
     headline: "Co-founder and CPO @ Clean",
     current: ["Co-founder and CPO @ Clean (YC F26)"],
     previously: ["Honorable Mention @ International Physics Olympiad 2024", "Existential Robotics Lab", "Triton Robotics", "Algoverse"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQEOITD8V7ga9w/profile-displayphoto-scale_400_400/B56ZkFQRevHkAg-/0/1756729776842?e=1796256000&v=beta&t=Z_Z1bLuqjGJqPuCyshcEXetcTtRoWJNzl0jygjTXPBc",
+    photo: "/people/clarissa-saputra.jpg",
     linkedin: "https://www.linkedin.com/in/clarisssaans/",
     website: "https://www.tryclean.ai",
   },
@@ -59,7 +60,7 @@ export const PEOPLE: Alum[] = [
     previously: ["Founder @ SDxUCSD", "Founding AI hire @ Cadre AI", "Co-founder @ Declass AI", "Contract AI Developer @ Qualcomm"],
     photo: "/people/dhruv-kanetkar.jpg",
     linkedin: "https://www.linkedin.com/in/dhruv-kanetkar/",
-    website: "https://github.com/DhruvK0",
+    github: "https://github.com/DhruvK0",
   },
   {
     slug: "henry-xiao",
@@ -67,18 +68,20 @@ export const PEOPLE: Alum[] = [
     headline: "Head of Talent @ Judgment Labs",
     current: ["Head of Talent @ Judgment Labs"],
     previously: ["Founder @ HX Agency"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQFaCcKsEXWqFw/profile-displayphoto-shrink_400_400/B56ZOKJW5VGkAg-/0/1733189531933?e=1796256000&v=beta&t=MtSftrw4qduvtIY4-Ex8ztOEuwmEXmIrKHbSqSiw3ZQ",
+    photo: "/people/henry-xiao.jpg",
     linkedin: "https://www.linkedin.com/in/chuhanxiao/",
     website: "https://www.judgmentlabs.ai",
   },
   {
     slug: "ryan-ni",
     name: "Ryan Ni",
-    headline: "Events Director @ SDxUCSD",
-    current: ["Events Director @ SDxUCSD"],
+    headline: "Building in stealth",
+    current: ["Building in stealth", "Events Director @ SDxUCSD"],
     previously: ["Founder @ Orca", "Founder Residency @ Lightyear", "Top 5 @ OpenAI Codex Hackathon", "Software Engineer Intern @ Apple", "Research Lead @ Q Lab"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQFy_u9jO7gQ8A/profile-displayphoto-scale_400_400/B56Zt1I9CRJoAk-/0/1767196840713?e=1796256000&v=beta&t=l5dR0iMGasHV2hn0MVC8Y44BaSq5BllvWUwucrevdxA",
+    photo: "/people/ryan-ni.jpg",
     linkedin: "https://www.linkedin.com/in/ryan-ni",
+    x: "https://x.com/ryanxani",
+    github: "https://github.com/ryunzz",
     website: "https://ryan-ni.vercel.app",
   },
   {
@@ -87,7 +90,7 @@ export const PEOPLE: Alum[] = [
     headline: "Incoming SWE Intern @ Hudson River Trading",
     current: ["Incoming Software Engineer Intern @ Hudson River Trading", "M.S. Robotics @ University of Pennsylvania"],
     previously: ["Software Engineer Intern @ Google", "Teaching Assistant @ UC San Diego"],
-    photo: "https://media.licdn.com/dms/image/v2/D4E03AQFKTSttdWZvgw/profile-displayphoto-scale_400_400/B4EaEsoeB_JkAg-/0/1791750172054?e=1796256000&v=beta&t=Z_pJxx6yqzmQnCKZPtFzdFya8FEAdaSN1hoHwPsaNcs",
+    photo: "/people/david-wang-2.jpg",
     linkedin: "https://www.linkedin.com/in/dy-wang",
   },
   {
@@ -96,9 +99,9 @@ export const PEOPLE: Alum[] = [
     headline: "Founder @ Stealth startup",
     current: ["Founder @ Stealth startup"],
     previously: ["Engineer @ Wayframe", "Hackathon Director @ ACM at UC San Diego", "Engineer @ Aspect", "Software Engineer Intern @ Letta", "Software Engineer @ Qualcomm Institute"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQFGrCXCarBe_A/profile-displayphoto-shrink_400_400/B56aE3b9WuK4AU-/0/1791931438768?e=1796256000&v=beta&t=WZust-p942LhkAfyQyogSr0hk4yXS4bjE2Cd7JA3YlM",
+    photo: "/people/david-wang.jpg",
     linkedin: "https://www.linkedin.com/in/davidwang1089/",
-    website: "https://github.com/dwang88",
+    github: "https://github.com/dwang88",
   },
   {
     slug: "justin-chou",
@@ -106,8 +109,9 @@ export const PEOPLE: Alum[] = [
     headline: "Founder @ Stealth startup",
     current: ["Founder @ Stealth startup"],
     previously: ["Software Engineer @ Google, Gemini Enterprise", "Intern @ Jane Street", "Machine Learning Engineer @ TensorWave", "Co-founder @ Declass AI"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQHrZLtyb9UuPA/profile-displayphoto-scale_400_400/B56Z.YjJogHYAg-/0/1784970780787?e=1796256000&v=beta&t=86G7ZS_6_Uc0bHs2mmduPJyYNwnGCpgrS943QDDVQ-o",
+    photo: "/people/justin-chou.jpg",
     linkedin: "https://www.linkedin.com/in/justintchou/",
+    github: "https://github.com/nakschou",
     website: "https://www.justintchou.com/",
   },
   {
@@ -116,9 +120,9 @@ export const PEOPLE: Alum[] = [
     headline: "Engineering Intern @ NVIDIA GEAR",
     current: ["Engineering Intern @ NVIDIA GEAR"],
     previously: ["Research Intern @ Google Moonshot", "Student Researcher @ Google DeepMind", "Deep Learning Inference Intern @ NVIDIA", "Software Engineer Intern @ Meta"],
-    photo: "https://media.licdn.com/dms/image/v2/D4D03AQHPlpzdVOCnQA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1699048298467?e=1796256000&v=beta&t=Sc8YdvyVA4Yr6dErydoGumL3rC2wfmQkU8iKK3mTkTg",
+    photo: "/people/satvik-matta.jpg",
     linkedin: "https://www.linkedin.com/in/satvik-matta/",
-    website: "https://github.com/Satvikmatta18",
+    github: "https://github.com/Satvikmatta18",
   },
   {
     slug: "eddie-jin",
@@ -136,7 +140,7 @@ export const PEOPLE: Alum[] = [
     headline: "AI Builder in Residence @ True Ventures",
     current: ["AI Builder in Residence @ True Ventures"],
     previously: ["SDE Intern @ Amazon Web Services", "AI Student Engineer @ Intel", "Venture Scout @ Anthos Capital", "Hackathon Director @ TritonHacks"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQFcrodOFbHVjw/profile-displayphoto-scale_400_400/B56Z2zC7LmHEAg-/0/1776825384960?e=1796256000&v=beta&t=TmzNpYNwONOIj6NP77HQaE3nf9k7IyQ53a3AWvFI0ig",
+    photo: "/people/keerthi-nalabotu.jpg",
     linkedin: "https://www.linkedin.com/in/keerthi-nalabotu/",
     website: "https://trueventures.com/team/keerthi-nalabotu",
   },
@@ -146,8 +150,10 @@ export const PEOPLE: Alum[] = [
     headline: "Software Engineer @ Sixtyfour",
     current: ["Software Engineer @ Sixtyfour (YC X25)"],
     previously: ["Intern @ HelixDB", "Research Data Analyst @ SOL-INCA"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQF16vuTKrN73w/profile-displayphoto-scale_400_400/B56aCOYZShIMAg-/0/1789095155716?e=1796256000&v=beta&t=1xZACYxvMWS_35P_-9l7WICF5fYKiDrrjku2YrwW1lM",
+    photo: "/people/putt-taleongpong.jpg",
     linkedin: "https://www.linkedin.com/in/nathaphat/",
+    x: "https://x.com/puttasync",
+    github: "https://github.com/putt-t",
     website: "https://putt.studio",
   },
   {
@@ -156,8 +162,10 @@ export const PEOPLE: Alum[] = [
     headline: "Founder @ Opal Intelligence Labs",
     current: ["Founder @ Opal Intelligence Labs"],
     previously: ["Top 5 @ OpenAI Codex Hackathon", "MLH Top 50 Hackers 2026"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQGkKsZadl9lzw/profile-displayphoto-scale_400_400/B56aCc_kQgGUAg-/0/1789340305136?e=1796256000&v=beta&t=grTjo7RA0gAA1jxYv2A7o6kLYBiEVWxci1noemhUTTc",
+    photo: "/people/joshua-lin.jpg",
     linkedin: "https://www.linkedin.com/in/qtzx06",
+    x: "https://x.com/qtzx06",
+    github: "https://github.com/qtzx06",
     website: "https://qtzx.dev/",
   },
   {
@@ -166,8 +174,10 @@ export const PEOPLE: Alum[] = [
     headline: "Member of Technical Staff Intern @ Hypercubic",
     current: ["Member of Technical Staff Intern @ Hypercubic (YC F25)", "Co-founder and CTO @ Signalor"],
     previously: ["Software and DevOps Intern @ IBM", "Software and DevOps Intern @ Climind", "Lead Developer @ Radians"],
-    photo: "https://media.licdn.com/dms/image/v2/D4D03AQEx3L8DiVJ8Mg/profile-displayphoto-scale_400_400/B4DZwhwe4xG8Ag-/0/1770092884386?e=1796256000&v=beta&t=IAZDOazEb40fpGvG9kvbMzLVwabmDKCP-2b1VwXISRw",
+    photo: "/people/alex-gao.jpg",
     linkedin: "https://linkedin.com/in/alexgaoth",
+    x: "https://x.com/alexgaoth",
+    github: "https://github.com/alexgaoth",
     website: "https://alexgaoth.com",
   },
   {
@@ -176,8 +186,9 @@ export const PEOPLE: Alum[] = [
     headline: "Software Engineering Intern @ SpaceX",
     current: ["Software Engineering Intern @ SpaceX", "Research Assistant @ Z Lab"],
     previously: ["Top 5 @ OpenAI Codex Hackathon", "Evolve @ Anthropic builder hackathon"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQGA3AbYQpkd_Q/profile-displayphoto-shrink_400_400/B56ZVs8AumHEAg-/0/1741289426174?e=1796256000&v=beta&t=rjCw5eYeJ9Ci67fS0GYCPggjmr8adA9mOcK6ZdZrTM4",
+    photo: "/people/philip-chen.jpg",
     linkedin: "https://www.linkedin.com/in/philip-chen6",
+    github: "https://github.com/philip-chen6",
     website: "https://philipchen.dev",
   },
   {
@@ -186,17 +197,17 @@ export const PEOPLE: Alum[] = [
     headline: "Co-President @ Triton Quantitative Trading",
     current: ["Co-President @ Triton Quantitative Trading"],
     previously: ["9th globally, 2nd in the US @ IMC Prosperity 3", "Putnam Top 500 in 2023 and 2025", "Stats Lead @ Triton Quantitative Trading"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQGKHaR-mA8o1Q/profile-displayphoto-shrink_400_400/B56ZVI8Z9BHoAo-/0/1740685549667?e=1796256000&v=beta&t=d7LBThswWFHdQ5XJDdZHsz1jZ09pVivsWireTukzUao",
+    photo: "/people/kenji-gunawan.jpg",
     linkedin: "https://www.linkedin.com/in/kenjigunawan",
     website: "https://tquantt.com/members",
   },
   {
     slug: "matthew-lu",
-    name: "Matthew J Lu",
+    name: "Matthew Lu",
     headline: "Software Engineer Intern @ Apple",
     current: ["Software Engineer Intern @ Apple", "M.S. Computer Science @ Stanford"],
     previously: ["Hackathon Director @ DiamondHacks", "Software Engineer Intern @ MathWorks", "San Diego Supercomputer Center"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQH47v-g7ZCKdA/profile-displayphoto-scale_400_400/B56Z7y2tm1G0Ag-/0/1782190892651?e=1796256000&v=beta&t=m957H8KgyAvTmGdw9mLa5hreZv0iWFmDSqqsQWDpozg",
+    photo: "/people/matthew-lu.jpg",
     linkedin: "https://www.linkedin.com/in/matthew-jlu",
   },
   {
@@ -205,8 +216,9 @@ export const PEOPLE: Alum[] = [
     headline: "Robotics Intern @ Qualcomm",
     current: ["Robotics Intern @ Qualcomm", "Autonomy Lead @ Triton Robotics"],
     previously: ["Underwater SLAM research @ Qualcomm Institute", "Axium Robotics"],
-    photo: "https://media.licdn.com/dms/image/v2/D5603AQEb1qgM8rBohQ/profile-displayphoto-scale_400_400/B56aEKZBx3IAAg-/0/1791175697161?e=1796256000&v=beta&t=30Jmxa5hrcOsxOt3dZ6q6fLvhajo-TtIvpWr5UJYzDA",
+    photo: "/people/vikram-kommera.jpg",
     linkedin: "https://www.linkedin.com/in/vikram-kommera-863263284",
+    x: "https://x.com/KommeraVik53045",
     website: "https://www.vikramkommera.com/",
   },
   {
@@ -215,26 +227,27 @@ export const PEOPLE: Alum[] = [
     headline: "AI Student @ Columbia University",
     current: ["AI Student @ Columbia University"],
     previously: ["DiamondHacks", "LA Hacks", "SB Hacks", "Bruin AI"],
-    photo: "https://media.licdn.com/dms/image/v2/D4E03AQGCrOcn-143Vg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1692248002315?e=1796256000&v=beta&t=IS6djJ7a-TvzuQbENqYcMZEdc9jAO8TYegHDXEkOo64",
+    photo: "/people/may-hong.jpg",
     linkedin: "https://www.linkedin.com/in/mayxhong/",
-    website: "https://github.com/mayhong1",
+    github: "https://github.com/mayhong1",
   },
   {
     slug: "alex-hamidi",
     name: "Alex Hamidi",
-    headline: "???",
-    current: ["???"],
+    headline: "Building in stealth",
+    current: ["Building in stealth"],
     previously: ["Engineer @ Freesolo (YC X25)", "Amazon Web Services", "Research @ Shang Data Lab", "Research @ Scripps Institution of Oceanography"],
     linkedin: "https://www.linkedin.com/in/alexander-hamidi-208736254/",
-    website: "https://github.com/alexhamidi",
+    github: "https://github.com/alexhamidi",
   },
   {
     slug: "aditya-kakarla",
     name: "Aditya Kakarla",
-    headline: "???",
-    current: ["???"],
+    headline: "Building in stealth",
+    current: ["Building in stealth"],
     previously: ["Software Engineer Intern @ Databricks", "Software Engineer @ Palantir", "Software Engineer Intern @ Microsoft", "Software Engineer Intern @ Cadre"],
     linkedin: "https://www.linkedin.com/in/aditya-kakarla/",
+    github: "https://github.com/adityakakarla",
     website: "https://www.adityakakarla.com/",
   },
 ];
