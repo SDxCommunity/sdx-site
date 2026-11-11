@@ -234,8 +234,8 @@ export const PEOPLE: Alum[] = [
   {
     slug: "alex-hamidi",
     name: "Alex Hamidi",
-    headline: "???",
-    current: ["???"],
+    headline: "Building in stealth",
+    current: ["Building in stealth"],
     previously: ["Engineer @ Freesolo (YC X25)", "Amazon Web Services", "Research @ Shang Data Lab", "Research @ Scripps Institution of Oceanography"],
     linkedin: "https://www.linkedin.com/in/alexander-hamidi-208736254/",
     github: "https://github.com/alexhamidi",
@@ -243,8 +243,8 @@ export const PEOPLE: Alum[] = [
   {
     slug: "aditya-kakarla",
     name: "Aditya Kakarla",
-    headline: "???",
-    current: ["???"],
+    headline: "Building in stealth",
+    current: ["Building in stealth"],
     previously: ["Software Engineer Intern @ Databricks", "Software Engineer @ Palantir", "Software Engineer Intern @ Microsoft", "Software Engineer Intern @ Cadre"],
     linkedin: "https://www.linkedin.com/in/aditya-kakarla/",
     github: "https://github.com/adityakakarla",
