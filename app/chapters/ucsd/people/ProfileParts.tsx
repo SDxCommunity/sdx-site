@@ -25,7 +25,7 @@ function Section({ title, lines, tone }: { title: string; lines: string[]; tone:
   return (
     <section>
       <h3 className="text-sm text-white/45">{title}</h3>
-      <ul className={`mt-1.5 space-y-1 pl-4 md:mt-2 md:space-y-1.5 ${tone}`}>
+      <ul className={`mt-1.5 space-y-1 pl-4 md:mt-2 ${tone}`}>
         {lines.map((line) => (
           <li key={line} className="flex gap-3">
             <span className="mt-[0.5em] md:mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-60" aria-hidden="true" />
@@ -40,7 +40,7 @@ function Section({ title, lines, tone }: { title: string; lines: string[]; tone:
 /** "Currently" first, then "Previously", each an indented list with a dot per line. */
 export function Bullets({ person }: { person: Alum }) {
   return (
-    <div className="space-y-4 text-sm leading-snug md:space-y-6 md:text-base md:leading-relaxed">
+    <div className="space-y-3 text-[13px] leading-snug md:space-y-5 md:text-base md:leading-relaxed">
       <Section title="Currently" lines={person.current} tone="text-white/90" />
       {person.previously.length > 0 && <Section title="Previously" lines={person.previously} tone="text-white/70" />}
     </div>
