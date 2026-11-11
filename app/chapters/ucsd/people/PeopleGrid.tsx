@@ -8,14 +8,14 @@ import Portrait from './Portrait';
 import { Bullets, Links, iconButton } from './ProfileParts';
 import type { Alum } from './people';
 
-const titleClass = 'text-3xl md:text-5xl text-white tracking-tight leading-[1.05]';
+const titleClass = 'text-3xl md:pr-8 md:text-5xl text-white tracking-tight leading-[1.05]';
 
 /**
  * The full profile in the dialog. Every person's text sits in the same grid
  * cell, with all but the open one hidden, so the card always takes the height
  * of the longest profile: nothing scrolls, and the controls never move. The
- * close button, links, and arrows sit in their corners at one inset; the name and
- * lists sit in from the corner with roomier padding.
+ * name, lists, close button, links, and arrows all sit at one inset from the card
+ * edge: 1.5rem on phones, 2.5rem on desktop.
  */
 function Profile({ people, shown, onStep }: { people: Alum[]; shown: number; onStep: (delta: number) => void }) {
   const person = people[shown];
@@ -49,7 +49,7 @@ function Profile({ people, shown, onStep }: { people: Alum[]; shown: number; onS
           })}
         </div>
 
-        <div className="flex items-center justify-between gap-4 p-4">
+        <div className="flex items-center justify-between gap-3 px-6 pb-6 pt-4 md:gap-4 md:px-10 md:pb-10">
           <Links person={person} />
           <div className="ml-auto flex items-center gap-2">
             <button type="button" onClick={() => onStep(-1)} aria-label="Previous person" className={iconButton}>
@@ -136,10 +136,10 @@ export default function PeopleGrid({ people }: { people: Alum[] }) {
               className={`${GeistSerif.className} relative m-auto w-full max-w-5xl overflow-hidden rounded-lg border border-white/10 bg-black duration-150 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95`}
             >
               <Profile people={people} shown={shown} onStep={step} />
-              {/* A bare X, no box. The padding is hit area only; the glyph's edges sit at the corner inset. */}
+              {/* A bare X, no box. The padding is hit area only; the glyph sits at the same inset as the name. */}
               <Dialog.Close
                 aria-label="Close"
-                className="absolute right-2 top-2 p-2 text-white/60 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] transition-colors duration-150 hover:text-white"
+                className="absolute right-4 top-4 p-2 md:right-8 md:top-8 text-white/60 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] transition-colors duration-150 hover:text-white"
               >
                 <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" aria-hidden="true">
                   <path d="M1 1l14 14M15 1L1 15" />
