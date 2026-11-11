@@ -5,15 +5,13 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { GeistSerif } from 'geist/font/serif';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import Portrait from './Portrait';
-import { Bullets, Links } from './ProfileParts';
+import { Bullets, Links, iconButton } from './ProfileParts';
 import type { Alum } from './people';
 
-const iconButton =
-  'flex h-9 w-9 items-center justify-center rounded-sm border border-white/15 text-white/70 transition-colors duration-150 hover:border-white/40 hover:text-white';
-
 /**
- * The full profile in the dialog. The dialog has one fixed size, so the arrows
- * at the bottom right stay in the same spot for every person; long lists scroll.
+ * The full profile in the dialog. The dialog has one fixed size, so the controls
+ * stay put for every person; long lists scroll. The links sit in the bottom-left
+ * corner and the arrows in the bottom-right, at the same inset as the close button.
  */
 function Profile({ person, onStep }: { person: Alum; onStep: (delta: number) => void }) {
   return (
@@ -22,16 +20,18 @@ function Profile({ person, onStep }: { person: Alum; onStep: (delta: number) => 
         <Portrait person={person} className="absolute inset-0 h-full w-full" />
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col p-6 md:p-10">
-        <Dialog.Title className="shrink-0 pr-10 text-3xl md:text-5xl text-white tracking-tight leading-[1.05]">
-          {person.name}
-        </Dialog.Title>
+      <div className="flex min-h-0 flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 flex-col px-6 pt-6 md:px-10 md:pt-10">
+          <Dialog.Title className="shrink-0 pr-10 text-3xl md:text-5xl text-white tracking-tight leading-[1.05]">
+            {person.name}
+          </Dialog.Title>
 
-        <div className="mt-6 min-h-0 flex-1 overflow-y-auto">
-          <Bullets person={person} />
+          <div className="mt-6 min-h-0 flex-1 overflow-y-auto pb-4">
+            <Bullets person={person} />
+          </div>
         </div>
 
-        <div className="flex shrink-0 items-center justify-between gap-4 pt-6">
+        <div className="flex shrink-0 items-center justify-between gap-4 p-4">
           <Links person={person} />
           <div className="ml-auto flex items-center gap-2">
             <button type="button" onClick={() => onStep(-1)} aria-label="Previous person" className={iconButton}>
