@@ -39,7 +39,7 @@ const chapters = [
     founded: "2026",
     founder: "Matt Attardo",
     description: "Expanding SDx's presence with SDSU's vibrant student community. Builder-first programming for Aztec engineers and creators.",
-    href: "#",
+    href: "/chapters/sdsu",
     contactEmail: "hello@sdx.community",
   },
 ];

@@ -12,10 +12,11 @@ import MotionSection from '@/app/components/motion/MotionSection';
 const FooterCanvas = dynamic(() => import('./FooterCanvas'), { ssr: false });
 
 const Footer: React.FC = () => {
-  // The UCSD chapter drops the top border and uses bold sentence-case column headings.
+  // The chapter sites (UCSD, SDSU) drop the top border and use bold sentence-case column headings.
   const segments = useSelectedLayoutSegments();
+  const onChapterSite = segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu');
   const onUcsdChapter = segments[0] === 'chapters' && segments[1] === 'ucsd';
-  const headingClass = onUcsdChapter
+  const headingClass = onChapterSite
     ? 'text-sm font-bold text-white mb-4'
     : 'text-xs uppercase tracking-widest text-white/60 mb-4';
 
@@ -27,7 +28,7 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className={`relative pt-16 overflow-hidden ${onUcsdChapter ? '' : 'border-t border-white/5'}`}>
+    <footer className={`relative pt-16 overflow-hidden ${onChapterSite ? '' : 'border-t border-white/5'}`}>
       <FooterCanvas />
 
       <MotionSection className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">

@@ -12,9 +12,22 @@ type MetaballCanvasProps = {
    * wrap the hero copy on every side with a soft, uneven edge.
    */
   clearAround?: React.RefObject<HTMLElement>;
+  /** "diamond" turns every cell 45°, so the blobs grow faceted edges. */
+  cellShape?: 'square' | 'diamond';
+  /** The ASCII texture inside the blobs: a circular "swirl" or concentric "diamond" rings. */
+  asciiPattern?: 'swirl' | 'diamond';
+  /** A CSS color or gradient multiplied over the white blobs, which tints them. */
+  tint?: string;
 };
 
-const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomFade = 'tall', clearAround }) => {
+const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
+  className = '',
+  bottomFade = 'tall',
+  clearAround,
+  cellShape = 'square',
+  asciiPattern = 'swirl',
+  tint,
+}) => {
   const { settings } = useCanvasSettings();
   const rootRef = useRef<HTMLDivElement>(null);
   const gooRef = useRef<HTMLDivElement>(null);
@@ -101,6 +114,8 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomF
     const frag = document.createDocumentFragment();
     let css = '';
     let idx = 0;
+    // Rotation comes last in each transform, so the cell turns about its own center.
+    const rot = cellShape === 'diamond' ? ' rotate(45deg)' : '';
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
@@ -145,21 +160,21 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomF
           height: `${cellSize}px`,
           background: 'white',
           borderRadius: `${borderRadius}%`,
-          transform: 'translate(-50%, -50%)',
+          transform: `translate(-50%, -50%)${rot}`,
           translate: '0px 0px',
           willChange: 'transform, translate',
           animation: `md${idx} ${dur.toFixed(1)}s cubic-bezier(1,0,0.31,1.39) ${delay.toFixed(1)}s infinite`,
         });
 
         css += `@keyframes md${idx}{
-  0%,100%{transform:translate(-50%,-50%)}
-  18%{transform:translate(calc(-50% + ${wp[0].x}px),calc(-50% + ${wp[0].y}px))}
-  25%{transform:translate(calc(-50% + ${Math.round(wp[0].x * 0.2)}px),calc(-50% + ${Math.round(wp[0].y * 0.2)}px))}
-  43%{transform:translate(calc(-50% + ${wp[1].x}px),calc(-50% + ${wp[1].y}px))}
-  50%{transform:translate(calc(-50% + ${Math.round(wp[1].x * 0.2)}px),calc(-50% + ${Math.round(wp[1].y * 0.2)}px))}
-  68%{transform:translate(calc(-50% + ${wp[2].x}px),calc(-50% + ${wp[2].y}px))}
-  75%{transform:translate(calc(-50% + ${Math.round(wp[2].x * 0.2)}px),calc(-50% + ${Math.round(wp[2].y * 0.2)}px))}
-  93%{transform:translate(calc(-50% + ${wp[3].x}px),calc(-50% + ${wp[3].y}px))}
+  0%,100%{transform:translate(-50%,-50%)${rot}}
+  18%{transform:translate(calc(-50% + ${wp[0].x}px),calc(-50% + ${wp[0].y}px))${rot}}
+  25%{transform:translate(calc(-50% + ${Math.round(wp[0].x * 0.2)}px),calc(-50% + ${Math.round(wp[0].y * 0.2)}px))${rot}}
+  43%{transform:translate(calc(-50% + ${wp[1].x}px),calc(-50% + ${wp[1].y}px))${rot}}
+  50%{transform:translate(calc(-50% + ${Math.round(wp[1].x * 0.2)}px),calc(-50% + ${Math.round(wp[1].y * 0.2)}px))${rot}}
+  68%{transform:translate(calc(-50% + ${wp[2].x}px),calc(-50% + ${wp[2].y}px))${rot}}
+  75%{transform:translate(calc(-50% + ${Math.round(wp[2].x * 0.2)}px),calc(-50% + ${Math.round(wp[2].y * 0.2)}px))${rot}}
+  93%{transform:translate(calc(-50% + ${wp[3].x}px),calc(-50% + ${wp[3].y}px))${rot}}
 }\n`;
 
         frag.appendChild(div);
@@ -221,7 +236,7 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomF
       if (ro) ro.disconnect();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cellSize, settings.heroDensity]);
+  }, [cellSize, settings.heroDensity, cellShape]);
 
   // Two-way visibility gate: stop doing per-frame work while the hero
   // canvas is scrolled out of view (e.g. user dwelling at the footer).
@@ -363,10 +378,16 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomF
           const py = r * charFontSize;
           const dx = px - cw / 2;
           const dy = py - ch / 2;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const angle = Math.atan2(dy, dx);
-          const swirl = Math.sin(dist * 0.015 - t * 3 + angle * 2) * 0.5 + 0.5;
-          const idx = Math.floor(swirl * (asciiChars.length - 1));
+          let wave: number;
+          if (asciiPattern === 'diamond') {
+            // Diamond rings (equal |dx| + |dy|) that ripple out from the center.
+            wave = Math.sin((Math.abs(dx) + Math.abs(dy)) * 0.02 - t * 4) * 0.5 + 0.5;
+          } else {
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx);
+            wave = Math.sin(dist * 0.015 - t * 3 + angle * 2) * 0.5 + 0.5;
+          }
+          const idx = Math.floor(wave * (asciiChars.length - 1));
           line += asciiChars[idx];
         }
         ctx.fillText(line, 0, r * charFontSize);
@@ -381,7 +402,7 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomF
       document.removeEventListener('mousemove', onDocMove);
       cancelAnimationFrame(rafRef.current);
     };
-  }, [mouseRadius, mouseStrength, mouseLag, cellSize, opacity]);
+  }, [mouseRadius, mouseStrength, mouseLag, cellSize, opacity, asciiPattern]);
 
 
   return (
@@ -438,6 +459,11 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({ className = '', bottomF
           className="absolute top-0 left-0"
           style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }}
         />
+
+        {/* Optional tint — multiply keeps black black and turns the white glyphs this color */}
+        {tint && (
+          <div className="absolute inset-0" style={{ background: tint, mixBlendMode: 'multiply' }} />
+        )}
       </div>
 
       {/* Radial fade around center */}

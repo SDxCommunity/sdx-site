@@ -163,13 +163,13 @@ const Stinger: React.FC = () => {
 };
 
 /**
- * The "building... built." intro on first load. The UCSD chapter skips it.
+ * The "building... built." intro on first load. The chapter sites (UCSD, SDSU) skip it.
  * Route segments, not the pathname, identify the chapter: ucsd.sdx.community
  * rewrites "/" to /chapters/ucsd, and only the segments see the rewritten route.
  */
 const LoadingStinger: React.FC = () => {
   const segments = useSelectedLayoutSegments();
-  if (segments[0] === 'chapters' && segments[1] === 'ucsd') return null;
+  if (segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu')) return null;
   return <Stinger />;
 };
 
