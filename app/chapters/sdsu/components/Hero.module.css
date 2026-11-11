@@ -1,0 +1,77 @@
+/*
+ * The SDSU hero title types itself out, one letter per step, behind a red block
+ * cursor. The UCSD hero slides its letters up instead.
+ *
+ * Each letter appears at --letter-delay. Its ::after is the cursor, shown for one
+ * step (--step) until the next letter takes over. The last letter's cursor blinks
+ * a few times, then goes away.
+ */
+
+@keyframes sdsuLetterOn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sdsuCursorStep {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sdsuCursorBlink {
+  0% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.letter {
+  position: relative;
+  display: inline-block;
+  animation: sdsuLetterOn 1ms steps(1, end) var(--letter-delay, 0s) both;
+}
+
+.letter::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 14%;
+  bottom: 10%;
+  width: 0.09em;
+  margin-left: 0.04em;
+  background: var(--sdsu-red-bright);
+  box-shadow: 0 0 14px rgba(240, 150, 155, 0.35);
+  opacity: 0;
+  animation: sdsuCursorStep var(--step, 70ms) steps(1, end) var(--letter-delay, 0s) forwards;
+}
+
+.last::after {
+  animation: sdsuCursorBlink 0.5s steps(1, end) var(--letter-delay, 0s) 4 forwards;
+}
+
+/* The site's white title glow with a faint rose edge */
+.glow {
+  --sdsu-red-bright: #f0969b;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.28)) drop-shadow(0 0 40px rgba(240, 150, 155, 0.14))
+    drop-shadow(0 0 80px rgba(255, 255, 255, 0.06));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter {
+    animation: none;
+  }
+
+  .letter::after {
+    display: none;
+  }
+}
