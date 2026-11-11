@@ -240,6 +240,17 @@ export const PEOPLE: Alum[] = [
     github: "https://github.com/mayhong1",
   },
   {
+    slug: "aditya-kakarla",
+    name: "Aditya Kakarla",
+    headline: "Building in stealth",
+    current: ["Building in stealth"],
+    previously: ["Software Engineer Intern @ Databricks", "Software Engineer @ Palantir", "Software Engineer Intern @ Microsoft", "Software Engineer Intern @ Cadre AI", "Software Engineer Intern @ US Department of Defense", "Software Engineer Intern @ USDA", "Researcher @ Mesirov Lab"],
+    photo: "/people/aditya-kakarla.jpg",
+    linkedin: "https://www.linkedin.com/in/aditya-kakarla/",
+    github: "https://github.com/adityakakarla",
+    website: "https://www.adityakakarla.com/",
+  },
+  {
     slug: "alex-hamidi",
     name: "Alex Hamidi",
     headline: "Building in stealth",
@@ -247,15 +258,5 @@ export const PEOPLE: Alum[] = [
     previously: ["Engineer @ Freesolo (formerly Clado, YC X25)", "Amazon Web Services", "Research @ Shang Data Lab", "Research @ Scripps Institution of Oceanography"],
     linkedin: "https://www.linkedin.com/in/alexander-hamidi-208736254/",
     github: "https://github.com/alexhamidi",
-  },
-  {
-    slug: "aditya-kakarla",
-    name: "Aditya Kakarla",
-    headline: "Building in stealth",
-    current: ["Building in stealth"],
-    previously: ["Software Engineer Intern @ Databricks", "Software Engineer @ Palantir", "Software Engineer Intern @ Microsoft", "Software Engineer Intern @ Cadre AI", "Software Engineer Intern @ US Department of Defense", "Software Engineer Intern @ USDA", "Researcher @ Mesirov Lab"],
-    linkedin: "https://www.linkedin.com/in/aditya-kakarla/",
-    github: "https://github.com/adityakakarla",
-    website: "https://www.adityakakarla.com/",
   },
 ];
