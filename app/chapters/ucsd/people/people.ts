@@ -28,7 +28,7 @@ export const PEOPLE: Alum[] = [
   {
     slug: "tom-zheng",
     name: "Tom Zheng",
-    headline: "Co-founder and CTO @ Freesolo",
+    headline: "Co-founder and CTO @ Freesolo (YC X25)",
     current: ["Co-founder and CTO @ Freesolo (formerly Clado, YC X25)"],
     previously: ["Advisor @ SDxUCSD", "Cerebras Systems"],
     photo: "/people/tom-zheng.jpg",
@@ -39,7 +39,7 @@ export const PEOPLE: Alum[] = [
   {
     slug: "shubham-patil",
     name: "Shubham Patil",
-    headline: "Co-founder @ Mosaic",
+    headline: "Co-founder @ Mosaic (YC S26)",
     current: ["Co-founder @ Mosaic (YC S26)"],
     previously: ["AI Research Engineer @ Beem", "Software Engineer @ Dimension", "Foundation Interfaces Lab", "Inseek", "OnDeck Fellows", "Software Engineer Intern and Event Engineer @ Hack Club", "Open Source Partnerships Lead and Regional Manager @ CodeDay", "Full Stack Engineer Intern @ Hack+"],
     photo: "/people/shubham-patil.jpg",
@@ -50,7 +50,7 @@ export const PEOPLE: Alum[] = [
   {
     slug: "clarissa-saputra",
     name: "Clarissa Saputra",
-    headline: "Co-founder and CPO @ Clean",
+    headline: "Co-founder and CPO @ Clean (YC F26)",
     current: ["Co-founder and CPO @ Clean (YC F26)", "Research Assistant @ Existential Robotics Lab", "Autonomy Lead @ Triton Robotics", "CTO @ StudiLanjut.id"],
     previously: ["Software Engineer Intern and Cast @ Ruangguru", "Diffusion research @ Algoverse (AAAI workshop)", "Honorable Mention @ International Physics Olympiad 2024", "Junior Academy @ New York Academy of Sciences", "Global STEM Accelerators @ AFS (1 of 180)", "Learning Development Intern @ TamanSchool"],
     photo: "/people/clarissa-saputra.jpg",
@@ -158,7 +158,7 @@ export const PEOPLE: Alum[] = [
   {
     slug: "putt-taleongpong",
     name: "Putt Taleongpong",
-    headline: "Software Engineer @ Sixtyfour",
+    headline: "Software Engineer @ Sixtyfour (YC X25)",
     current: ["Software Engineer @ Sixtyfour (YC X25)"],
     previously: ["Software Engineer @ HelixDB", "Data Research Analyst @ UC San Diego Health"],
     photo: "/people/putt-taleongpong.jpg",
@@ -182,7 +182,7 @@ export const PEOPLE: Alum[] = [
   {
     slug: "alex-gao",
     name: "Alex Gao",
-    headline: "Member of Technical Staff Intern @ Hypercubic",
+    headline: "Member of Technical Staff Intern @ Hypercubic (YC F25)",
     current: ["Member of Technical Staff Intern @ Hypercubic (YC F25)", "Co-founder and CTO @ Signalor"],
     previously: ["Software Engineer Intern @ IBM (return offer)", "Intern @ Climind", "Lead Developer @ Radians"],
     photo: "/people/alex-gao.jpg",
