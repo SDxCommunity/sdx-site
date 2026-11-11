@@ -256,8 +256,8 @@ export const PEOPLE: Alum[] = [
   {
     slug: "matthieu-fuller",
     name: "Matthieu Fuller",
-    headline: "Campus Leader @ Replit",
-    current: ["Campus Leader @ Replit", "Building @ Signalor", "VP Tech and Quant @ Triton Trading Group", "Advisor @ Startup Incubator", "Events @ SDxUCSD"],
+    headline: "Founder @ Signalor",
+    current: ["Founder @ Signalor", "Campus Leader @ Replit", "VP Tech and Quant @ Triton Trading Group", "Advisor @ Startup Incubator", "Events @ SDxUCSD"],
     previously: ["Systems Intern @ Meadow Labs", "Builder @ CCPorted (200k MAU)", "VP Tech @ Startup Incubator", "Mobile Intern @ Lawnly", "Software Engineer Intern @ Contextualize"],
     photo: "/people/matthieu-fuller.jpg",
     linkedin: "https://www.linkedin.com/in/matthieu-fuller/",
