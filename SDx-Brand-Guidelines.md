@@ -40,7 +40,7 @@ Dark-first, builder-focused, technically precise. A black canvas with prismatic 
 
 ```
 Events:     https://lu.ma/sdx
-Discord:    https://discord.gg/Rkgyzx2ykV
+Discord:    https://discord.gg/Y7ME6kQAye
 Twitter:    https://twitter.com/SDxCommunity
 LinkedIn:   https://linkedin.com/company/sdxcommunity
 Instagram:  https://instagram.com/sdxcommunity

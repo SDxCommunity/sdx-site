@@ -51,10 +51,10 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex gap-3 mt-4">
               <Link
-                href="https://discord.gg/Rkgyzx2ykV"
+                href="https://discord.gg/Y7ME6kQAye"
                 target="_blank"
                 aria-label="Join our Discord"
-                onClick={() => handleLinkClick('https://discord.gg/Rkgyzx2ykV', 'footer-discord')}
+                onClick={() => handleLinkClick('https://discord.gg/Y7ME6kQAye', 'footer-discord')}
                 className="text-white/60 hover:text-white transition-colors duration-200"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@ const Footer: React.FC = () => {
           <ul className="space-y-2 text-sm md:col-start-4 md:row-start-2">
             {[
               { href: 'https://lu.ma/sdx', label: 'Calendar' },
-              { href: 'https://discord.gg/Rkgyzx2ykV', label: 'Discord' },
+              { href: 'https://discord.gg/Y7ME6kQAye', label: 'Discord' },
             ].map((link) => (
               <li key={link.label}>
                 <Link

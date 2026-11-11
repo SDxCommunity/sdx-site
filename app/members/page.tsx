@@ -175,7 +175,7 @@ export default function MembersPage() {
             </MotionButton>
             <MotionButton className="inline-block">
               <Link
-                href="https://discord.gg/Rkgyzx2ykV"
+                href="https://discord.gg/Y7ME6kQAye"
                 target="_blank"
                 className="block btn-secondary px-6 py-2 text-xs uppercase tracking-widest rounded-sm transition-shadow duration-200"
               >

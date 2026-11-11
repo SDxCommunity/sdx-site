@@ -8,7 +8,7 @@ import MotionSection from '@/app/components/motion/MotionSection';
 import MotionButton from '@/app/components/motion/MotionButton';
 import styles from './gallery.module.css';
 
-const DISCORD = 'https://discord.gg/Rkgyzx2ykV';
+const DISCORD = 'https://discord.gg/Y7ME6kQAye';
 
 export default function JoinCTA() {
   return (

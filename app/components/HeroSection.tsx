@@ -305,9 +305,9 @@ const HeroSection: React.FC = () => {
             </MotionButton>
             <MotionButton>
               <Link
-                href="https://discord.gg/Rkgyzx2ykV"
+                href="https://discord.gg/Y7ME6kQAye"
                 target="_blank"
-                onClick={() => handleLinkClick('https://discord.gg/Rkgyzx2ykV', 'cta-discord')}
+                onClick={() => handleLinkClick('https://discord.gg/Y7ME6kQAye', 'cta-discord')}
                 className="btn-outline-glow px-6 py-3 text-xs uppercase tracking-widest rounded-sm block"
               >
                 Join Discord
