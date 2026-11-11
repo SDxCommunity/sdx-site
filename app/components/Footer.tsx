@@ -11,32 +11,42 @@ import MotionSection from '@/app/components/motion/MotionSection';
 // load — split it out of the main layout chunk.
 const FooterCanvas = dynamic(() => import('./FooterCanvas'), { ssr: false });
 
+const MAIN_SITE = 'https://www.sdx.community';
+const CONTACT_EMAIL = 'hello@sdx.community';
+
+const headingClass = 'text-base font-bold text-white mb-4';
+const linkClass = 'text-white/70 hover:text-white transition-colors duration-200';
+
 const Footer: React.FC = () => {
-  // The chapter sites (UCSD, SDSU) drop the top border and use bold sentence-case column headings.
   const segments = useSelectedLayoutSegments();
   const onChapterSite = segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu');
-  const onUcsdChapter = segments[0] === 'chapters' && segments[1] === 'ucsd';
-  const headingClass = onChapterSite
-    ? 'text-sm font-bold text-white mb-4'
-    : 'text-xs uppercase tracking-widest text-white/60 mb-4';
 
   // The UCSD people lookbook stands alone, with no footer.
-  if (onUcsdChapter && segments[2] === 'people') return null;
+  if (onChapterSite && segments[1] === 'ucsd' && segments[2] === 'people') return null;
+
+  // The footer always leads to the main SDx site. A chapter subdomain rewrites relative
+  // paths into the chapter, so there the links name the main domain. On the main site
+  // they stay relative and keep the page transition.
+  const mainHref = (path: string) => (onChapterSite ? `${MAIN_SITE}${path}` : path);
 
   const handleLinkClick = (linkUrl: string, label: string) => {
     sendGAEvent('clicked', { link_url: linkUrl, label });
   };
 
   return (
-    <footer className={`relative pt-16 overflow-hidden ${onChapterSite ? '' : 'border-t border-white/5'}`}>
+    <footer className="relative pt-16 overflow-hidden">
       <FooterCanvas />
 
       <MotionSection className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-1 md:col-span-2">
-            <span className="font-display text-2xl text-white tracking-tight mb-4 inline-block">SDx</span>
-            <p className="text-sm text-white/70 max-w-sm leading-relaxed">
+        {/* On desktop, row 1 sets SDx, Navigate, and Community on one baseline.
+            Row 2 starts the tagline, Events, and Calendar on one line. */}
+        <div className="grid grid-cols-1 md:grid-cols-4 md:gap-x-8">
+          <span className="font-display text-2xl text-white tracking-tight mb-4 md:col-span-2 md:col-start-1 md:row-start-1 md:self-baseline">
+            SDx
+          </span>
+
+          <div className="md:col-span-2 md:col-start-1 md:row-start-2">
+            <p className="text-sm text-white/70">
               San Diego&apos;s builder-first technology community.
             </p>
             <div className="flex gap-3 mt-4">
@@ -52,14 +62,14 @@ const Footer: React.FC = () => {
                 </svg>
               </Link>
               <Link
-                href="https://twitter.com/SDxCommunity"
+                href="https://x.com/SDxCommunity"
                 target="_blank"
-                aria-label="Follow us on Twitter"
-                onClick={() => handleLinkClick('https://twitter.com/SDxCommunity', 'footer-twitter')}
+                aria-label="Follow us on X"
+                onClick={() => handleLinkClick('https://x.com/SDxCommunity', 'footer-twitter')}
                 className="text-white/60 hover:text-white transition-colors duration-200"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
                 </svg>
               </Link>
               <Link
@@ -87,47 +97,44 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className={headingClass}>Navigate</h3>
-            <ul className="space-y-2">
-              {[
-                { href: '/events', label: 'Events' },
-                { href: '/members', label: 'Members' },
-                { href: '/chapters', label: 'Chapters' },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-white/70 hover:text-white transition-colors duration-200">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <h3 className={`${headingClass} mt-8 md:mt-0 md:col-start-3 md:row-start-1 md:self-baseline`}>Navigate</h3>
+          <ul className="space-y-2 text-sm md:col-start-3 md:row-start-2">
+            {[
+              { href: mainHref('/events'), label: 'Events' },
+              { href: mainHref('/chapters'), label: 'Chapters' },
+            ].map((link) => (
+              <li key={link.label}>
+                <Link href={link.href} className={linkClass}>
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
 
-          {/* Community */}
-          <div>
-            <h3 className={headingClass}>Community</h3>
-            <ul className="space-y-2">
-              {[
-                { href: 'https://lu.ma/sdx', label: 'Events Calendar', external: true },
-                { href: 'https://discord.gg/Rkgyzx2ykV', label: 'Discord', external: true },
-                { href: '/executives', label: 'Executive Network', external: false },
-                { href: 'mailto:hello@sdx.community', label: 'Contact', external: false },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    target={link.external ? '_blank' : undefined}
-                    className="text-sm text-white/70 hover:text-white transition-colors duration-200"
-                    onClick={() => link.external && handleLinkClick(link.href, `footer-${link.label.toLowerCase()}`)}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <h3 className={`${headingClass} mt-8 md:mt-0 md:col-start-4 md:row-start-1 md:self-baseline`}>Community</h3>
+          <ul className="space-y-2 text-sm md:col-start-4 md:row-start-2">
+            {[
+              { href: 'https://lu.ma/sdx', label: 'Calendar' },
+              { href: 'https://discord.gg/Rkgyzx2ykV', label: 'Discord' },
+            ].map((link) => (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  target="_blank"
+                  className={linkClass}
+                  onClick={() => handleLinkClick(link.href, `footer-${link.label.toLowerCase()}`)}
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              {/* A plain anchor: the app router's Link swallows mailto: clicks. */}
+              <a href={`mailto:${CONTACT_EMAIL}`} className={linkClass}>
+                Contact
+              </a>
+            </li>
+          </ul>
         </div>
 
         {/* Bottom Bar */}

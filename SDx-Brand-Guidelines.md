@@ -382,17 +382,6 @@ background:
 background-size: 64px 64px;
 ```
 
-### Loading Stinger
-
-On first page load, a full-screen black overlay plays:
-
-```
-Phase 1 (0–1.4s): "building..." in Tiposka, white, centered — dots pulse
-                    White squares pop in at random positions (42px, 8% opacity)
-Phase 2 (1.4–2.2s): Snaps to "built."
-Phase 3 (2.2s+):   Overlay slides up off-screen
-```
-
 ### Metaball Canvas
 
 The hero background features animated blob/metaball effects — dark, very low opacity, subtle depth.
@@ -506,7 +495,7 @@ This is a soft expo-out — fast start, gentle deceleration, no bounce. Use this
 
 ```
 Primary (Soft Expo Out):   cubic-bezier(0.16, 1, 0.3, 1)   — All entrances, page transitions
-Elastic Overshoot:         cubic-bezier(1, 0, 0.31, 1.39)   — Stinger animation, cursor blink
+Elastic Overshoot:         cubic-bezier(1, 0, 0.31, 1.39)   — Cursor blink
 ```
 
 ### Transitions

@@ -9,8 +9,12 @@ const CELL_SIZE = 60;
 const GAP = 5;
 const STEP = CELL_SIZE + GAP;
 const BORDER_RADIUS = '22%';
-const FILL_STAGGER = 300;
-const EXIT_STAGGER = 300;
+const FILL_STAGGER = 100;
+const EXIT_STAGGER = 100;
+/** Wait after the fill starts before the route changes. The backdrop covers the page by then. */
+const PUSH_DELAY = FILL_STAGGER + 30;
+/** Pause on the covered screen before the exit starts. */
+const HOLD = 30;
 const FEATHER_SIZE = 20;
 
 const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -104,7 +108,7 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
         if (pendingHref.current) {
           router.push(pendingHref.current);
         }
-      }, FILL_STAGGER + 100);
+      }, PUSH_DELAY);
     };
 
     document.addEventListener('click', handleClick, true);
@@ -153,14 +157,14 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
     // Brief hold, then exit animation to reveal new page
     const exitTimer = setTimeout(() => {
       setPhase('exit');
-    }, 100);
+    }, HOLD);
 
     // After exit animation completes, go to idle so motion animations fire
     const doneTimer = setTimeout(() => {
       setPhase('idle');
       isTransitioning.current = false;
       pendingHref.current = null;
-    }, 100 + EXIT_STAGGER + 150);
+    }, HOLD + EXIT_STAGGER + 150);
 
     return () => {
       clearTimeout(exitTimer);
@@ -181,7 +185,7 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
               inset: 0,
               background: 'black',
               opacity: phase === 'fill' || phase === 'hold' ? 1 : 0,
-              transition: phase === 'exit' ? 'opacity 200ms ease-out' : 'opacity 100ms ease-out',
+              transition: phase === 'exit' ? 'opacity 150ms ease-out' : 'opacity 100ms ease-out',
             }}
           />
           {/* Feather layer */}

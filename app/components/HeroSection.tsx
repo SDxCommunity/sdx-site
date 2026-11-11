@@ -60,11 +60,6 @@ const metrics = [
 ];
 
 const HeroSection: React.FC = () => {
-  // On fresh page load the stinger plays (~3s) so we delay hero animations.
-  // On navigation from another page the stinger already ran, so use short delays.
-  const isFirstLoad = typeof window !== 'undefined' && performance.now() < 4000;
-  const d = (stingerDelay: number, navDelay: number) => isFirstLoad ? stingerDelay : navDelay;
-
   const handleLinkClick = (linkUrl: string, label: string) => {
     sendGAEvent('clicked', { link_url: linkUrl, label });
   };
@@ -88,7 +83,7 @@ const HeroSection: React.FC = () => {
               className="font-display text-6xl md:text-8xl lg:text-9xl text-white tracking-tight mb-6 prismatic-glow"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ ...transitions.heroEntrance, delay: d(2.4, 0.2) }}
+              transition={{ ...transitions.heroEntrance, delay: 0.2 }}
             >
               Build here.
             </m.h1>
@@ -96,7 +91,7 @@ const HeroSection: React.FC = () => {
               className="text-base md:text-lg text-white/70 max-w-xl mx-auto leading-relaxed mb-10"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ ...transitions.appear, delay: d(2.8, 0.4) }}
+              transition={{ ...transitions.appear, delay: 0.4 }}
             >
               San Diego&apos;s builder-first technology community.
             </m.p>
@@ -105,7 +100,7 @@ const HeroSection: React.FC = () => {
               className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ ...transitions.appear, delay: d(3.0, 0.5) }}
+              transition={{ ...transitions.appear, delay: 0.5 }}
             >
               <MotionButton>
                 <Link
@@ -133,7 +128,7 @@ const HeroSection: React.FC = () => {
               className="flex flex-wrap items-center justify-center gap-4 md:gap-8 lg:gap-12"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ ...transitions.appear, delay: d(3.2, 0.6) }}
+              transition={{ ...transitions.appear, delay: 0.6 }}
             >
               {metrics.map((metric, i) => (
                 <React.Fragment key={metric.label}>

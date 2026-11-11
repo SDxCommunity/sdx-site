@@ -4,7 +4,7 @@ import type { Transition, Variants } from 'motion/react';
 // Hero cube bezier: cubic-bezier(1, 0, 0.31, 1.39) — elastic overshoot
 export const EASE_OVERSHOOT: [number, number, number, number] = [1, 0, 0.31, 1.39];
 
-// Softer expo-out for everyday UI (matches stinger-pop easing)
+// Softer expo-out for everyday UI
 export const EASE_SOFT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 // Transition presets

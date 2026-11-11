@@ -163,23 +163,6 @@
   100% { background: black; }
 }
 
-/* Loading stinger */
-@keyframes stinger-text {
-  0% { opacity: 0; transform: translateY(20px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes stinger-dots {
-  0%, 25% { opacity: 0.2; }
-  50% { opacity: 0.6; }
-  75%, 100% { opacity: 1; }
-}
-
-@keyframes stinger-pop {
-  0% { transform: translate(-50%, -50%) scale(0); }
-  100% { transform: translate(-50%, -50%) scale(1); }
-}
-
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,

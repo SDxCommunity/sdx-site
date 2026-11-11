@@ -12,8 +12,6 @@ import styles from './Hero.module.css';
 const TITLE = 'SDxUCSD';
 
 export default function Hero() {
-  const d = (_stingerDelay: number, navDelay: number) => navDelay;
-
   const copyRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const contentOpacity = useTransform(scrollY, [0, 480], [1, 0]);
@@ -65,7 +63,7 @@ export default function Hero() {
             className="relative mt-8 max-w-xl text-base md:text-lg leading-relaxed"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: d(2.85, 0.5) }}
+            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.5 }}
           >
             <span className="text-white/70">the home for UCSD&apos;s most ambitious builders and founders.</span>
           </m.p>
@@ -75,7 +73,7 @@ export default function Hero() {
             className="relative mt-10"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: d(3.05, 0.65) }}
+            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.65 }}
           >
             <JoinRow />
           </m.div>
