@@ -20,30 +20,38 @@ function DefaultAvatar({ className }: { className: string }) {
 }
 
 /** A person's photo, or the default avatar when there is none or it fails to load. */
-export default function Portrait({ person, className }: { person: Alum; className: string }) {
+export default function Portrait({ person, className, loading, focus }: {
+  person: Alum;
+  className: string;
+  loading?: 'eager' | 'lazy';
+  focus?: boolean;
+}) {
   // Remember which URL failed, so the dialog can switch people without carrying a failure over.
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const focusSrc = focus ? person.focusPhoto : undefined;
+  const src = focusSrc && focusSrc !== failedSrc ? focusSrc : person.photo;
 
   // A server-rendered image can fail before React attaches onError, so check after each new photo.
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth === 0) setFailedSrc(person.photo ?? null);
-  }, [person.photo]);
+    if (img && img.complete && img.naturalWidth === 0) setFailedSrc(src ?? null);
+  }, [src]);
 
-  if (!person.photo || failedSrc === person.photo) return <DefaultAvatar className={className} />;
+  if (!src || failedSrc === person.photo) return <DefaultAvatar className={className} />;
 
   return (
-    // Photos come from LinkedIn and public/people; next/image would need each host allowlisted.
+    // Serve the prepared portraits directly to avoid re-encoding them.
     // eslint-disable-next-line @next/next/no-img-element
     <img
       ref={imgRef}
-      src={person.photo}
+      src={src}
       alt={person.name}
+      loading={loading}
       draggable={false}
       className={`object-cover object-[center_25%] ${className}`}
       referrerPolicy="no-referrer"
-      onError={() => setFailedSrc(person.photo ?? null)}
+      onError={() => setFailedSrc(src)}
     />
   );
 }
