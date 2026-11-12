@@ -203,16 +203,6 @@ export const PEOPLE: Alum[] = [
     website: "https://philipchen.dev",
   },
   {
-    slug: "kenji-gunawan",
-    name: "Kenji Gunawan",
-    headline: "Co-President @ Triton Quantitative Trading",
-    current: ["Co-President @ Triton Quantitative Trading", "Honors Thesis Researcher @ UC San Diego"],
-    previously: ["Stats Lead and Researcher @ Triton Quantitative Trading", "9th globally, 2nd in the US @ IMC Prosperity 3", "Quantitative Research Intern @ Pinnacle Investment", "Putnam Top 500 in 2023 and 2025", "Cast @ Ruangguru Clash of Champions"],
-    photo: "/people/kenji-gunawan.jpg",
-    linkedin: "https://www.linkedin.com/in/kenjigunawan",
-    website: "https://tquantt.com/members",
-  },
-  {
     slug: "matthew-lu",
     name: "Matthew Lu",
     headline: "M.S. Computer Science @ Stanford",
