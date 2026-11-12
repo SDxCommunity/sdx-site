@@ -23,7 +23,7 @@ function Profile({ people, shown, onStep }: { people: Alum[]; shown: number; onS
   return (
     <div className="flex flex-col md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
       <div className="relative h-36 shrink-0 overflow-hidden bg-white/[0.02] md:h-auto">
-        <Portrait person={person} className="absolute inset-0 h-full w-full" />
+        <Portrait person={person} focus className="absolute inset-0 h-full w-full" />
       </div>
 
       <div className="flex flex-col">
@@ -113,6 +113,7 @@ export default function PeopleGrid({ people }: { people: Alum[] }) {
               <div className="relative aspect-square overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] transition-colors duration-150 group-hover:border-white/25">
                 <Portrait
                   person={person}
+                  loading={i < 3 ? 'eager' : 'lazy'}
                   className="absolute inset-0 h-full w-full grayscale transition-[filter,transform] duration-200 group-hover:scale-[1.02] group-hover:grayscale-0"
                 />
               </div>
