@@ -82,8 +82,8 @@ export const PEOPLE: Alum[] = [
   {
     slug: "ryan-ni",
     name: "Ryan Ni",
-    headline: "Building in stealth",
-    current: ["Building in stealth", "Events @ SDxUCSD"],
+    headline: "Heads down building",
+    current: ["Heads down building", "Events @ SDxUCSD"],
     previously: ["Founder @ Orca, backed by Lightyear (HF0 incubated residency)", "Software Engineer Intern @ Apple", "Top 5 of 1,500+ interns @ Apple iContest", "Top 5 @ OpenAI Codex Hackathon", "18x hackathon wins", "Research @ UC San Diego (Q Lab, XR Lab, LIL Lab)"],
     photo: "/people/ryan-ni.jpg",
     linkedin: "https://www.linkedin.com/in/ryan-ni",
@@ -201,16 +201,6 @@ export const PEOPLE: Alum[] = [
     linkedin: "https://www.linkedin.com/in/philip-chen6",
     github: "https://github.com/philip-chen6",
     website: "https://philipchen.dev",
-  },
-  {
-    slug: "kenji-gunawan",
-    name: "Kenji Gunawan",
-    headline: "Co-President @ Triton Quantitative Trading",
-    current: ["Co-President @ Triton Quantitative Trading", "Honors Thesis Researcher @ UC San Diego"],
-    previously: ["Stats Lead and Researcher @ Triton Quantitative Trading", "9th globally, 2nd in the US @ IMC Prosperity 3", "Quantitative Research Intern @ Pinnacle Investment", "Putnam Top 500 in 2023 and 2025", "Cast @ Ruangguru Clash of Champions"],
-    photo: "/people/kenji-gunawan.jpg",
-    linkedin: "https://www.linkedin.com/in/kenjigunawan",
-    website: "https://tquantt.com/members",
   },
   {
     slug: "matthew-lu",
