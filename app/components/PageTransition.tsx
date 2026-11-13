@@ -41,7 +41,7 @@ const MAX_FRAME_MS = 34;
  * Pages that `next dev` compiles on first visit. Fetching them while idle means the first
  * click does not wait on the compiler. Production builds them ahead of time, so this is dev only.
  */
-const DEV_WARM_ROUTES = ['/events', '/chapters', '/chapters/ucsd', '/chapters/sdsu'];
+const DEV_WARM_ROUTES = ['/events', '/chapters'];
 
 /** Set on <html> while the grid covers the old page, so heavy canvases there can pause. */
 export const WIPE_ATTR = 'data-wipe';
