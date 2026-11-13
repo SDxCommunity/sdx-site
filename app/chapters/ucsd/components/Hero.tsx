@@ -11,6 +11,11 @@ import styles from './Hero.module.css';
 import { UCSD_HERO_TINT } from '../lib/theme';
 
 const TITLE = 'SDxUCSD';
+/** Time per typed letter */
+const STEP_S = 0.07;
+const FIRST_LETTER_S = 0.2;
+/** The subhead and buttons follow once the title is typed out. */
+const TYPED_S = FIRST_LETTER_S + TITLE.length * STEP_S;
 
 export default function Hero() {
   const copyRef = useRef<HTMLDivElement>(null);
@@ -42,7 +47,7 @@ export default function Hero() {
       >
         {/* The blob field clears an area around this block, so blobs wrap the copy */}
         <div ref={copyRef} className="flex flex-col items-center">
-          {/* Headline — letter-staggered, UCSD outlined per chapter naming */}
+          {/* Headline — typed out letter by letter, UCSD outlined per chapter naming */}
           <h1
             aria-label="SDxUCSD"
             className={`relative font-display text-[clamp(3.25rem,12.5vw,10.5rem)] leading-[0.95] tracking-tight select-none ${styles.glow}`}
@@ -51,8 +56,15 @@ export default function Hero() {
               <span
                 key={i}
                 aria-hidden="true"
-                className={`${styles.letter} ${i < 3 ? 'text-white' : 'text-outline'}`}
-                style={{ '--letter-delay': `${(0.2 + i * 0.055).toFixed(3)}s` } as React.CSSProperties}
+                className={`${styles.letter} ${i === TITLE.length - 1 ? styles.last : ''} ${
+                  i < 3 ? 'text-white' : 'text-outline'
+                }`}
+                style={
+                  {
+                    '--letter-delay': `${(FIRST_LETTER_S + i * STEP_S).toFixed(3)}s`,
+                    '--step': `${STEP_S}s`,
+                  } as React.CSSProperties
+                }
               >
                 {ch}
               </span>
@@ -64,7 +76,7 @@ export default function Hero() {
             className="relative mt-8 max-w-xl text-base md:text-lg leading-relaxed"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.5 }}
+            transition={{ duration: 0.8, ease: EASE_SOFT, delay: TYPED_S }}
           >
             <span className="text-white/70">the home for UCSD&apos;s most ambitious builders and founders.</span>
           </m.p>
@@ -74,7 +86,7 @@ export default function Hero() {
             className="relative mt-10"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.65 }}
+            transition={{ duration: 0.8, ease: EASE_SOFT, delay: TYPED_S + 0.15 }}
           >
             <JoinRow />
           </m.div>
