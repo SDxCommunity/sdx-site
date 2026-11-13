@@ -1,0 +1,41 @@
+/*
+ * Pure-CSS per-letter rise for display titles.
+ *
+ * The letters are server-rendered as plain <span> elements so the LCP text
+ * paints without waiting on the motion JS bundle to boot/hydrate. The
+ * keyframe mirrors the earlier framer-motion values exactly:
+ *   initial: { opacity: 0, y: '0.4em' }
+ *   animate: { opacity: 1, y: 0 }
+ *   transition: { duration: 1.1s, ease: cubic-bezier(0.16, 1, 0.3, 1) }
+ * Per-letter delay is passed in via the --letter-delay custom property.
+ */
+
+@keyframes sdxLetterIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.4em);
+  animation-name: sdxLetterIn;
+  animation-duration: 1.1s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+  animation-delay: var(--letter-delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

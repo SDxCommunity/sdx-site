@@ -1,11 +1,8 @@
 'use client'
 
-import React from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ExternalLink } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface StartupCardProps {
   name: string;
@@ -22,6 +19,19 @@ interface StartupCardProps {
   category: string;
 }
 
+const METRIC_LABELS: [keyof StartupCardProps['metrics'], string][] = [
+  ['funding', 'Funding'],
+  ['users', 'Users'],
+  ['revenue', 'Revenue'],
+  ['githubStars', 'Stars'],
+];
+
+/** "A", "A and B", or "A, B, and C" */
+function listNames(names: string[]) {
+  if (names.length < 3) return names.join(' and ');
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+}
+
 const StartupCard: React.FC<StartupCardProps> = ({
   name,
   description,
@@ -29,85 +39,67 @@ const StartupCard: React.FC<StartupCardProps> = ({
   founders,
   metrics,
   websiteUrl,
-  category
+  category,
 }) => {
+  const [logoFailed, setLogoFailed] = useState(false);
+  const shownMetrics = METRIC_LABELS.filter(([key]) => metrics[key]);
+
   const content = (
-    <Card className={`h-full ${websiteUrl ? 'transition-colors duration-200 hover:border-white/20' : ''}`}>
-      <CardHeader>
-        <div className="flex items-center mb-2">
-          {logoUrl && (
-            <div className="w-10 h-10 bg-white/[0.04] rounded-lg mr-3 flex items-center justify-center overflow-hidden">
-              <Image
-                src={logoUrl}
-                alt={`${name} logo`}
-                width={40}
-                height={40}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <div>
-            <CardTitle className="text-base">{name}</CardTitle>
-            <Badge variant="outline" className="mt-1">{category}</Badge>
-          </div>
-        </div>
-      </CardHeader>
-
-      <CardContent className="space-y-3 flex flex-col flex-1">
-        <p className="text-sm text-white/40 leading-relaxed">{description}</p>
-
-        <div className="flex flex-wrap gap-1">
-          {founders.map((founder, index) => (
-            <Badge key={index} variant="secondary">
-              {founder}
-            </Badge>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          {metrics.funding && (
-            <div className="bg-white/[0.06] rounded px-3 py-2">
-              <span className="block text-base font-bold text-white/90">{metrics.funding}</span>
-              <span className="block text-xs uppercase tracking-widest text-white/40">Funding</span>
-            </div>
-          )}
-          {metrics.users && (
-            <div className="bg-white/[0.06] rounded px-3 py-2">
-              <span className="block text-base font-bold text-white/90">{metrics.users}</span>
-              <span className="block text-xs uppercase tracking-widest text-white/40">Users</span>
-            </div>
-          )}
-          {metrics.revenue && (
-            <div className="bg-white/[0.06] rounded px-3 py-2">
-              <span className="block text-base font-bold text-white/90">{metrics.revenue}</span>
-              <span className="block text-xs uppercase tracking-widest text-white/40">Revenue</span>
-            </div>
-          )}
-          {metrics.githubStars && (
-            <div className="bg-white/[0.06] rounded px-3 py-2">
-              <span className="block text-base font-bold text-white/90">{metrics.githubStars}</span>
-              <span className="block text-xs uppercase tracking-widest text-white/40">Stars</span>
-            </div>
+    <article className="relative flex h-full flex-col rounded-lg border border-white/10 bg-black p-6 transition-[border-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:border-white/25">
+      <div className="flex items-center gap-3">
+        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-md border border-white/10 bg-white/[0.03]">
+          {logoUrl && !logoFailed ? (
+            <Image
+              src={logoUrl}
+              alt={`${name} logo`}
+              width={44}
+              height={44}
+              className="h-full w-full object-cover"
+              onError={() => setLogoFailed(true)}
+            />
+          ) : (
+            <span className="font-display text-lg text-white/60">{name[0]}</span>
           )}
         </div>
-
+        <div className="min-w-0">
+          <h3 className="font-display text-xl text-white tracking-tight leading-tight">{name}</h3>
+          <p className="mt-0.5 text-sm text-white/50">{category}</p>
+        </div>
         {websiteUrl && (
-          <div className="mt-auto flex justify-end pt-2">
-            <span className="btn-secondary inline-flex items-center px-4 py-1.5 text-xs uppercase tracking-widest rounded-sm">
-              Visit
-              <ExternalLink className="w-3 h-3 ml-1.5" />
-            </span>
-          </div>
+          <ArrowUpRight
+            className="ml-auto h-4 w-4 shrink-0 self-start text-white/30 transition-colors group-hover:text-white"
+            aria-hidden="true"
+          />
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      <p className="mt-5 text-sm leading-relaxed text-white/70">{description}</p>
+
+      {founders.length > 0 && (
+        <p className="mt-4 text-sm text-white/45">Founded by {listNames(founders)}</p>
+      )}
+
+      {shownMetrics.length > 0 && (
+        // Pinned to the bottom so metrics line up across a row of cards
+        <div className="mt-auto pt-6">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-white/10 pt-4 text-sm">
+            {shownMetrics.map(([key, label]) => (
+              <div key={key}>
+                <dt className="text-white/45">{label}</dt>
+                <dd className="mt-0.5 font-display text-lg text-white/90 tracking-tight">{metrics[key]}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+    </article>
   );
 
   if (websiteUrl) {
     return (
-      <Link href={websiteUrl} target="_blank" className="block group">
+      <a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="group block h-full">
         {content}
-      </Link>
+      </a>
     );
   }
 
