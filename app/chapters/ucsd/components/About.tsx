@@ -7,6 +7,9 @@ import MotionSection from '@/app/components/motion/MotionSection';
 import media from '../lib/media';
 import { UCSD_LUMA_PAST } from '../lib/links';
 
+/** The wash over each event photo: blue and gold in turn. */
+const TILE_WASHES = ['#3a86d4', '#FAC205'];
+
 export default function About() {
   return (
     <section className="relative py-20 md:py-28 px-4 sm:px-6 lg:px-8 overflow-hidden">
@@ -14,7 +17,7 @@ export default function About() {
         className="pointer-events-none absolute inset-0 opacity-40"
         style={{
           background:
-            'radial-gradient(ellipse 60% 50% at 80% 30%, rgba(17,187,205,0.12), transparent 60%), radial-gradient(ellipse 40% 40% at 10% 80%, rgba(217,44,45,0.08), transparent 55%)',
+            'radial-gradient(ellipse 60% 50% at 80% 30%, rgba(132,176,236,0.1), transparent 60%), radial-gradient(ellipse 40% 40% at 10% 80%, rgba(240,200,100,0.07), transparent 55%)',
         }}
         aria-hidden="true"
       />
@@ -27,7 +30,7 @@ export default function About() {
               <h2 className="font-display text-3xl md:text-5xl text-white tracking-tight leading-[1.08] prismatic-glow-sm">
                 What we do
               </h2>
-              <ul className="mt-8 space-y-4 text-sm md:text-base text-white/70 leading-relaxed max-w-md list-disc pl-5 marker:text-white/40">
+              <ul className="mt-8 space-y-4 text-sm md:text-base text-white/70 leading-relaxed max-w-md list-disc pl-5 marker:text-[#f0c864]/60">
                 <li>
                   Host weekly demo days, where students show what they are building with AI
                   and get feedback from peers
@@ -52,7 +55,7 @@ export default function About() {
           <div className="lg:col-span-7 flex lg:h-full">
             <MotionSection delay={0.08} className="w-full">
               <div className="grid grid-cols-2 gap-5 sm:gap-7">
-                {media.about.map((tile) => (
+                {media.about.map((tile, i) => (
                   <m.a
                     key={tile.id}
                     href={UCSD_LUMA_PAST}
@@ -79,7 +82,7 @@ export default function About() {
                     <div
                       className="absolute inset-0"
                       style={{
-                        background: `radial-gradient(ellipse at 30% 20%, ${tile.accent}44 0%, transparent 55%),
+                        background: `radial-gradient(ellipse at 30% 20%, ${TILE_WASHES[i % TILE_WASHES.length]}44 0%, transparent 55%),
                           linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0.35) 100%)`,
                       }}
                     />

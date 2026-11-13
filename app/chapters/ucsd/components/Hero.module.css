@@ -32,6 +32,12 @@
   animation-delay: var(--letter-delay, 0s);
 }
 
+/* The site's white title glow with a faint gold edge */
+.glow {
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.28)) drop-shadow(0 0 40px rgba(240, 200, 100, 0.16))
+    drop-shadow(0 0 80px rgba(255, 255, 255, 0.06));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .letter {
     animation: none;

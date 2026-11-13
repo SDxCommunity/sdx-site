@@ -8,6 +8,7 @@ import MetaballCanvas from '@/app/components/MetaballCanvas';
 import SpecStrip from './SpecStrip';
 import JoinRow from './JoinRow';
 import styles from './Hero.module.css';
+import { UCSD_HERO_TINT } from '../lib/theme';
 
 const TITLE = 'SDxUCSD';
 
@@ -20,10 +21,10 @@ export default function Hero() {
 
   return (
     <section className="relative flex flex-col overflow-hidden">
-      {/* ── Background layer — matches the home page hero treatment ── */}
+      {/* ── Background: the site's blob field, tinted blue and gold for UCSD ── */}
       <m.div className="absolute inset-0 w-screen overflow-hidden" style={{ opacity: fieldOpacity }} aria-hidden="true">
         <BackgroundEffects />
-        <MetaballCanvas bottomFade="none" clearAround={copyRef} />
+        <MetaballCanvas bottomFade="none" clearAround={copyRef} tint={UCSD_HERO_TINT} />
         {/*
           Mirrors the top bar: the blobs fade out over the last 3.5rem of the first
           screen (the bar's height) and stay black below it.
@@ -44,7 +45,7 @@ export default function Hero() {
           {/* Headline — letter-staggered, UCSD outlined per chapter naming */}
           <h1
             aria-label="SDxUCSD"
-            className="relative font-display text-[clamp(3.25rem,12.5vw,10.5rem)] leading-[0.95] tracking-tight prismatic-glow select-none"
+            className={`relative font-display text-[clamp(3.25rem,12.5vw,10.5rem)] leading-[0.95] tracking-tight select-none ${styles.glow}`}
           >
             {TITLE.split('').map((ch, i) => (
               <span

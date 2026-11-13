@@ -5,6 +5,7 @@ import { ArrowUpRight } from 'lucide-react';
 import MotionSection from '@/app/components/motion/MotionSection';
 import PrismaticCanvas from '@/app/components/PrismaticCanvas';
 import { UCSD_LUMA, UCSD_LUMA_PAST } from '../lib/links';
+import { UCSD_FIELDS } from '../lib/theme';
 
 type UcsdEventKind = 'major' | 'feature' | 'regular';
 
@@ -229,7 +230,7 @@ function TimelineSlot({
           }`}
           style={archive ? { backgroundImage: ARCHIVE_STRIPES } : undefined}
         >
-          {featured && <PrismaticCanvas intensity="medium" />}
+          {featured && <PrismaticCanvas intensity="medium" colors={UCSD_FIELDS} />}
           {/* Text ignores the pointer so mouse moves reach the color field underneath */}
           <span className="pointer-events-none relative z-10 flex flex-col items-center">{children}</span>
         </span>
