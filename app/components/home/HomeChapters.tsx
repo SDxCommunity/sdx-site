@@ -134,7 +134,10 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
   );
 
   if (planned) {
-    return <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10">{body}</div>;
+    // Grayed out a little until the chapter launches.
+    return (
+      <div className="flex h-full flex-col overflow-hidden rounded-xl border border-white/10 opacity-60 grayscale">{body}</div>
+    );
   }
   return (
     <Link

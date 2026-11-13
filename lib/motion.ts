@@ -10,7 +10,8 @@ export const EASE_SOFT: [number, number, number, number] = [0.16, 1, 0.3, 1];
 // Transition presets
 export const transitions: Record<string, Transition> = {
   appear: {
-    duration: 1.0,
+    // Short, so content is readable as soon as the page wipe lifts.
+    duration: 0.5,
     ease: EASE_SOFT,
   },
   hover: {

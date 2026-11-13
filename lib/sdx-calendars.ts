@@ -35,6 +35,8 @@ const CALENDARS: { chapter: Chapter; id: string }[] = [
   { chapter: 'sdx', id: SDX_CALENDAR_API_ID },
 ];
 
+const OWN_CALENDARS = new Set(CALENDARS.map((calendar) => calendar.id));
+
 const HOUR = 60 * 60;
 const DAY = 24 * HOUR;
 
@@ -60,7 +62,14 @@ async function fetchCalendar(id: string) {
   }
 }
 
-type Detail = { coverUrl: string | null; summary: string; timezone: string | null; address: string | null };
+type Detail = {
+  coverUrl: string | null;
+  summary: string;
+  timezone: string | null;
+  address: string | null;
+  /** The calendar that owns the event, which may differ from the calendar that lists it. */
+  calendarId: string | null;
+};
 
 type MirrorNode = { type?: string; text?: string; content?: MirrorNode[] };
 
@@ -118,6 +127,7 @@ async function fetchDetail(id: string, title: string, upcoming: boolean): Promis
       summary: summarize(paragraphs(json?.description_mirror), title),
       timezone: typeof event.timezone === 'string' ? event.timezone : null,
       address: event.geo_address_json?.address ?? null,
+      calendarId: typeof event.calendar_api_id === 'string' ? event.calendar_api_id : null,
     };
     detailMemo.set(id, { at: Date.now(), detail });
     return detail;
@@ -165,8 +175,12 @@ export async function getNetworkEvents(): Promise<{ events: NetworkEvent[]; ok: 
 
   const details = await mapPool(merged, 6, ({ event, upcoming }) => fetchDetail(event.id, event.title, upcoming));
 
-  const events: NetworkEvent[] = merged.map(({ event, chapter, upcoming }, index) => {
-    const detail = details[index];
+  // A calendar can feature other hosts' events. Keep only events that one of the three SDx calendars owns.
+  const owned = merged
+    .map((item, index) => ({ ...item, detail: details[index] }))
+    .filter(({ detail }) => !detail?.calendarId || OWN_CALENDARS.has(detail.calendarId));
+
+  const events: NetworkEvent[] = owned.map(({ event, chapter, upcoming, detail }) => {
     const location = event.location && event.location !== 'Location TBD' ? event.location : detail?.address ?? null;
     return {
       id: event.id,

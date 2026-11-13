@@ -37,6 +37,15 @@ const MAX_WAIT_MS = 8000;
  */
 const MAX_FRAME_MS = 34;
 
+/**
+ * Pages that `next dev` compiles on first visit. Fetching them while idle means the first
+ * click does not wait on the compiler. Production builds them ahead of time, so this is dev only.
+ */
+const DEV_WARM_ROUTES = ['/events', '/chapters', '/chapters/ucsd', '/chapters/sdsu'];
+
+/** Set on <html> while the grid covers the old page, so heavy canvases there can pause. */
+export const WIPE_ATTR = 'data-wipe';
+
 type Cell = { x: number; y: number; order: number };
 /**
  * cover: the grid sweeps in. hold: the grid waits briefly for the page. reveal: the grid sweeps
@@ -122,6 +131,7 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
     anim.current.elapsed = 0;
     anim.current.last = 0;
     swapped.current = true;
+    document.documentElement.removeAttribute(WIPE_ATTR);
     setShown(nextChildren.current);
     window.scrollTo(0, 0);
     setPhase('reveal');
@@ -233,6 +243,23 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
     if (!anim.current.raf) anim.current.raf = requestAnimationFrame(step);
   }, [frame]);
 
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') return;
+    let cancelled = false;
+    const warm = async () => {
+      for (const route of DEV_WARM_ROUTES) {
+        if (cancelled) return;
+        if (route === window.location.pathname) continue;
+        await fetch(route).catch(() => undefined);
+      }
+    };
+    const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 1500));
+    idle(() => void warm(), { timeout: 3000 });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Internal link clicks start the wipe and the navigation together.
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -268,6 +295,7 @@ const PageTransition: React.FC<{ children: React.ReactNode }> = ({ children }) =
       anim.current.mode = 'cover';
       anim.current.elapsed = 0;
       anim.current.last = 0;
+      document.documentElement.setAttribute(WIPE_ATTR, '');
       setPhase('cover');
       startLoop();
       // The wipe scrolls to the top itself, under the grid, so the old page never jumps.

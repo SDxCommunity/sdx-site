@@ -16,10 +16,18 @@ const stats = [
 
 /** Add a photo by setting `image` to a path under /public, for example '/programs/paper-club.jpg'. */
 const programs: { name: string; desc: string; image?: string }[] = [
-  { name: 'Paper Club', desc: 'Deep dives into fundamental ML research. Come ready to debate.' },
-  { name: 'AI Coffee', desc: 'Open talk on the latest in AI, from people who ship it.' },
-  { name: 'Demo Days', desc: 'Builders show what they made and get real feedback.' },
-  { name: 'Hackathons', desc: 'Full-day build events with sponsor credits and prizes.' },
+  {
+    name: 'Fireside Chats',
+    desc: 'Founders and operators talk candidly about what they built and what they learned.',
+    image: '/programs/fireside-chats.jpg',
+  },
+  { name: 'Demo Days', desc: 'Builders show what they made and get real feedback.', image: '/programs/demo-days.jpg' },
+  { name: 'Hackathons', desc: 'Full-day build events with sponsor credits and prizes.', image: '/programs/hackathons.jpg' },
+  {
+    name: 'Flagship Events',
+    desc: 'Our biggest nights of the year, with the whole San Diego builder community in one room.',
+    image: '/programs/flagship-events.jpg',
+  },
 ];
 
 /** Fine stripes hold the place of a photo that has not been added yet. */

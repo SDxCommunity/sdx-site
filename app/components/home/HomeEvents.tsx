@@ -5,11 +5,11 @@ import MotionSection from '@/app/components/motion/MotionSection';
 import SectionTitle from '@/app/components/SectionTitle';
 import ArrowLink from '@/app/components/ArrowLink';
 import EventAgenda from '@/app/components/EventAgenda';
-import { useSdxEvents } from '@/lib/useSdxEvents';
+import { useNetworkEvents } from '@/lib/useNetworkEvents';
 
-/** The home page's events, from the main SDx Luma calendar. */
+/** The home page's events, from the SDx, SDxUCSD, and SDxSDSU Luma calendars. */
 export default function HomeEvents() {
-  const { events, loading } = useSdxEvents();
+  const { events, loading } = useNetworkEvents();
 
   return (
     <section className="relative py-16 md:py-20 px-4 sm:px-6 lg:px-8">

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasSettings } from './CanvasSettingsContext';
+import { WIPE_ATTR } from './PageTransition';
 
 type MetaballCanvasProps = {
   className?: string;
@@ -25,6 +26,36 @@ type MetaballCanvasProps = {
    */
   tint?: string;
 };
+
+/**
+ * y for x on cubic-bezier(1, 0, 0.31, 1.39), sampled once: each cell rests, then snaps
+ * to its next point with a small overshoot.
+ */
+const EASE_STEPS = 256;
+const EASE_TABLE = (() => {
+  const table = new Float32Array(EASE_STEPS + 1);
+  const bx = (t: number) => 3 * (1 - t) * (1 - t) * t * 1 + 3 * (1 - t) * t * t * 0.31 + t * t * t;
+  const by = (t: number) => 3 * (1 - t) * t * t * 1.39 + t * t * t;
+  for (let i = 0; i <= EASE_STEPS; i++) {
+    const x = i / EASE_STEPS;
+    let lo = 0;
+    let hi = 1;
+    for (let k = 0; k < 24; k++) {
+      const mid = (lo + hi) / 2;
+      if (bx(mid) < x) lo = mid;
+      else hi = mid;
+    }
+    table[i] = by((lo + hi) / 2);
+  }
+  return table;
+})();
+const ease = (x: number) => EASE_TABLE[Math.round(x * EASE_STEPS)];
+
+/** Where each wander keyframe sits in the loop, and how far toward its point the cell is. */
+const WANDER_AT = [0, 0.18, 0.25, 0.43, 0.5, 0.68, 0.75, 0.93, 1];
+
+/** The ASCII layer redraws at most this often. Its swirl moves slowly, so 30fps looks the same. */
+const ASCII_FRAME_MS = 33;
 
 /** An x inside the cell box. The arms are thick enough to survive the goo blur. */
 const X_CLIP =
@@ -52,6 +83,10 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
   const offYRef = useRef<number[]>([]);
   const lastWriteXRef = useRef<number[]>([]);
   const lastWriteYRef = useRef<number[]>([]);
+  // Each cell's wander: loop length and start delay in ms, and its keyframe offsets as x,y pairs.
+  const wanderDurRef = useRef<number[]>([]);
+  const wanderDelayRef = useRef<number[]>([]);
+  const wanderPathRef = useRef<Float32Array[]>([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const smoothMouseRef = useRef({ x: -1000, y: -1000 });
   const asciiCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -94,6 +129,9 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
     offYRef.current = [];
     lastWriteXRef.current = [];
     lastWriteYRef.current = [];
+    wanderDurRef.current = [];
+    wanderDelayRef.current = [];
+    wanderPathRef.current = [];
 
     const sr = (seed: number) => {
       const x = Math.sin(seed) * 10000;
@@ -129,8 +167,6 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
     }
 
     const frag = document.createDocumentFragment();
-    let css = '';
-    let idx = 0;
     // Rotation comes last in each transform, so the cell turns about its own center.
     const rot = cellShape === 'diamond' ? ' rotate(45deg)' : '';
 
@@ -181,20 +217,20 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
           clipPath: isX ? X_CLIP : '',
           transform: `translate(-50%, -50%)${rot}`,
           translate: '0px 0px',
-          willChange: 'transform, translate',
-          animation: `md${idx} ${dur.toFixed(1)}s cubic-bezier(1,0,0.31,1.39) ${delay.toFixed(1)}s infinite`,
+          willChange: 'translate',
         });
 
-        css += `@keyframes md${idx}{
-  0%,100%{transform:translate(-50%,-50%)${rot}}
-  18%{transform:translate(calc(-50% + ${wp[0].x}px),calc(-50% + ${wp[0].y}px))${rot}}
-  25%{transform:translate(calc(-50% + ${Math.round(wp[0].x * 0.2)}px),calc(-50% + ${Math.round(wp[0].y * 0.2)}px))${rot}}
-  43%{transform:translate(calc(-50% + ${wp[1].x}px),calc(-50% + ${wp[1].y}px))${rot}}
-  50%{transform:translate(calc(-50% + ${Math.round(wp[1].x * 0.2)}px),calc(-50% + ${Math.round(wp[1].y * 0.2)}px))${rot}}
-  68%{transform:translate(calc(-50% + ${wp[2].x}px),calc(-50% + ${wp[2].y}px))${rot}}
-  75%{transform:translate(calc(-50% + ${Math.round(wp[2].x * 0.2)}px),calc(-50% + ${Math.round(wp[2].y * 0.2)}px))${rot}}
-  93%{transform:translate(calc(-50% + ${wp[3].x}px),calc(-50% + ${wp[3].y}px))${rot}}
-}\n`;
+        // The wander used to be one CSS animation per cell. One loop in tick() costs far less.
+        const path = new Float32Array(WANDER_AT.length * 2);
+        const points = [[0, 0], [wp[0].x, wp[0].y], [wp[0].x * 0.2, wp[0].y * 0.2], [wp[1].x, wp[1].y],
+          [wp[1].x * 0.2, wp[1].y * 0.2], [wp[2].x, wp[2].y], [wp[2].x * 0.2, wp[2].y * 0.2], [wp[3].x, wp[3].y], [0, 0]];
+        points.forEach(([px, py], i) => {
+          path[i * 2] = px;
+          path[i * 2 + 1] = py;
+        });
+        wanderDurRef.current.push(dur * 1000);
+        wanderDelayRef.current.push(delay * 1000);
+        wanderPathRef.current.push(path);
 
         frag.appendChild(div);
         cellsRef.current.push(div);
@@ -204,15 +240,9 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
         offYRef.current.push(0);
         lastWriteXRef.current.push(0);
         lastWriteYRef.current.push(0);
-        idx++;
       }
     }
 
-    css += `@media(prefers-reduced-motion:reduce){div[style*="animation"]{animation:none!important}}\n`;
-
-    const style = document.createElement('style');
-    style.textContent = css;
-    el.appendChild(style);
     el.appendChild(frag);
   };
 
@@ -266,6 +296,8 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
     const observer = new IntersectionObserver(
       entries => {
         visibleRef.current = entries.some(entry => entry.isIntersecting);
+        // Off screen, skip the field's rendering too, so the prism wash stops painting.
+        root.style.contentVisibility = visibleRef.current ? 'visible' : 'hidden';
       },
       { threshold: 0 }
     );
@@ -301,12 +333,36 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
 
     const asciiChars = '@#%&*+=-:·.';
     const charFontSize = 11;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const ctx = asciiCanvas.getContext('2d');
+    // Each character's distance term in the wave, rebuilt only when the size changes.
+    let geo = { w: 0, h: 0, cols: 0, rows: 0, base: new Float32Array(0) };
+    let lastAscii = 0;
+    const buildGeo = (cw: number, ch: number) => {
+      if (!ctx) return;
+      ctx.font = `${charFontSize}px "Space Mono", monospace`;
+      const charWidth = ctx.measureText('@').width || charFontSize * 0.6;
+      const cols = Math.ceil(cw / charWidth) + 5;
+      const rows = Math.ceil(ch / charFontSize) + 2;
+      const base = new Float32Array(cols * rows);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const dx = c * charWidth - cw / 2;
+          const dy = r * charFontSize - ch / 2;
+          base[r * cols + c] =
+            asciiPattern === 'diamond'
+              ? (Math.abs(dx) + Math.abs(dy)) * 0.02
+              : Math.sqrt(dx * dx + dy * dy) * 0.015 + Math.atan2(dy, dx) * 2;
+        }
+      }
+      geo = { w: cw, h: ch, cols, rows, base };
+    };
 
     const tick = () => {
       // Tab is backgrounded, or the hero has scrolled out of view — nothing
       // is visible, so skip the work but keep the rAF chain alive (cheap)
       // so it resumes automatically the moment either condition clears.
-      if (document.hidden || !visibleRef.current) {
+      if (document.hidden || !visibleRef.current || document.documentElement.hasAttribute(WIPE_ATTR)) {
         rafRef.current = requestAnimationFrame(tick);
         return;
       }
@@ -333,7 +389,27 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
       const lastWriteX = lastWriteXRef.current;
       const lastWriteY = lastWriteYRef.current;
 
+      const now = performance.now();
+      const wanderOn = !reduceMotion.matches;
+      const wDur = wanderDurRef.current;
+      const wDelay = wanderDelayRef.current;
+      const wPath = wanderPathRef.current;
+
       for (let i = 0; i < cells.length; i++) {
+        let wx = 0;
+        let wy = 0;
+        const since = now - wDelay[i];
+        if (wanderOn && since > 0) {
+          const phase = (since % wDur[i]) / wDur[i];
+          let k = 1;
+          while (k < WANDER_AT.length - 1 && phase > WANDER_AT[k]) k++;
+          const from = WANDER_AT[k - 1];
+          const e = ease((phase - from) / (WANDER_AT[k] - from));
+          const path = wPath[i];
+          wx = path[(k - 1) * 2] + (path[k * 2] - path[(k - 1) * 2]) * e;
+          wy = path[(k - 1) * 2 + 1] + (path[k * 2 + 1] - path[(k - 1) * 2 + 1]) * e;
+        }
+
         const hx = homeX[i];
         const hy = homeY[i];
         const ddx = hx - smooth.x;
@@ -359,57 +435,45 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
         // sub-pixel epsilon of what's already rendered — avoids needless
         // compositor work (and possible filter-layer re-raster) for the
         // vast majority of cells, which sit at rest most of the time.
-        if (Math.abs(newOffX - lastWriteX[i]) > 0.02 || Math.abs(newOffY - lastWriteY[i]) > 0.02) {
-          cells[i].style.translate = `${newOffX}px ${newOffY}px`;
-          lastWriteX[i] = newOffX;
-          lastWriteY[i] = newOffY;
+        const x = newOffX + wx;
+        const y = newOffY + wy;
+        if (Math.abs(x - lastWriteX[i]) > 0.05 || Math.abs(y - lastWriteY[i]) > 0.05) {
+          cells[i].style.translate = `${x.toFixed(2)}px ${y.toFixed(2)}px`;
+          lastWriteX[i] = x;
+          lastWriteY[i] = y;
         }
       }
 
-      // Draw ASCII swirl — use same rect as container for exact match
+      // Draw the ASCII swirl, at most every ASCII_FRAME_MS, on a canvas the size of the container
       const cw = Math.ceil(w);
       const ch = Math.ceil(h);
-      if (asciiCanvas.width !== cw || asciiCanvas.height !== ch) {
-        asciiCanvas.width = cw;
-        asciiCanvas.height = ch;
-      }
-
-      const ctx = asciiCanvas.getContext('2d');
       if (!ctx) { rafRef.current = requestAnimationFrame(tick); return; }
-
-      // Black background is essential — multiply blend: black × anything = black
-      ctx.fillStyle = 'black';
-      ctx.fillRect(0, 0, cw, ch);
-      ctx.font = `${charFontSize}px "Space Mono", monospace`;
-      ctx.fillStyle = 'white';
-      ctx.textBaseline = 'top';
-
-      // Measure actual character width once instead of guessing
-      const charWidth = ctx.measureText('@').width || charFontSize * 0.6;
-      const cols = Math.ceil(cw / charWidth) + 5; // extra buffer
-      const rows = Math.ceil(ch / charFontSize) + 2;
-      const t = performance.now() * 0.0003;
-
-      for (let r = 0; r < rows; r++) {
-        let line = '';
-        for (let c = 0; c < cols; c++) {
-          const px = c * charWidth;
-          const py = r * charFontSize;
-          const dx = px - cw / 2;
-          const dy = py - ch / 2;
-          let wave: number;
-          if (asciiPattern === 'diamond') {
-            // Diamond rings (equal |dx| + |dy|) that ripple out from the center.
-            wave = Math.sin((Math.abs(dx) + Math.abs(dy)) * 0.02 - t * 4) * 0.5 + 0.5;
-          } else {
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            const angle = Math.atan2(dy, dx);
-            wave = Math.sin(dist * 0.015 - t * 3 + angle * 2) * 0.5 + 0.5;
-          }
-          const idx = Math.floor(wave * (asciiChars.length - 1));
-          line += asciiChars[idx];
+      if (now - lastAscii >= ASCII_FRAME_MS) {
+        lastAscii = now;
+        if (asciiCanvas.width !== cw || asciiCanvas.height !== ch) {
+          asciiCanvas.width = cw;
+          asciiCanvas.height = ch;
         }
-        ctx.fillText(line, 0, r * charFontSize);
+        if (geo.w !== cw || geo.h !== ch) buildGeo(cw, ch);
+
+        // Black background is essential — multiply blend: black × anything = black
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, cw, ch);
+        ctx.font = `${charFontSize}px "Space Mono", monospace`;
+        ctx.fillStyle = 'white';
+        ctx.textBaseline = 'top';
+
+        const shift = now * 0.0003 * (asciiPattern === 'diamond' ? 4 : 3);
+        const last = asciiChars.length - 1;
+        const { cols, rows, base } = geo;
+        const line: string[] = new Array(cols);
+        for (let r = 0; r < rows; r++) {
+          const row = r * cols;
+          for (let c = 0; c < cols; c++) {
+            line[c] = asciiChars[Math.floor((Math.sin(base[row + c] - shift) * 0.5 + 0.5) * last)];
+          }
+          ctx.fillText(line.join(''), 0, r * charFontSize);
+        }
       }
 
       if (!readyRef.current && cellsRef.current.length > 0) {

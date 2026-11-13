@@ -21,7 +21,7 @@ type PageHeaderProps = {
   tone?: keyof typeof GLOWS;
   /** Actions under the subtitle, such as an ArrowLink. */
   children?: React.ReactNode;
-  /** A link on the title's line, at the right edge. */
+  /** A link on the title's line, just after the title. */
   aside?: React.ReactNode;
   /** "md" sets a smaller title. */
   size?: 'lg' | 'md';
@@ -49,6 +49,8 @@ export default function PageHeader({
     <StaggerTitle
       text={title}
       outlineFrom={outlineFrom}
+      delay={0.05}
+      step={0.035}
       className={`font-display ${TITLE_SIZES[size]} leading-[0.95] tracking-tight text-white prismatic-glow select-none`}
     />
   );
@@ -64,13 +66,13 @@ export default function PageHeader({
 
       <div className="relative z-[1] max-w-6xl mx-auto">
         {aside ? (
-          <div className="flex items-baseline justify-between gap-6">
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-3">
             {heading}
             <m.div
               className="shrink-0"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.4 }}
+              transition={{ duration: 0.25, delay: 0.15 }}
             >
               {aside}
             </m.div>
@@ -84,7 +86,7 @@ export default function PageHeader({
             className="mt-8 max-w-2xl text-base md:text-lg leading-relaxed text-white/70"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.5 }}
+            transition={{ duration: 0.45, ease: EASE_SOFT, delay: 0.12 }}
           >
             {subtitle}
           </m.p>
@@ -95,7 +97,7 @@ export default function PageHeader({
             className="mt-8"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.65 }}
+            transition={{ duration: 0.45, ease: EASE_SOFT, delay: 0.18 }}
           >
             {children}
           </m.div>

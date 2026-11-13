@@ -117,7 +117,15 @@ export default function HomeHero() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.9, ease: EASE_SOFT, delay: 0.8 }}
       >
-        <PartnerBanner />
+        {/* A slight shadow just under the logos, so they lift off the field */}
+        <div
+          className="pointer-events-none absolute inset-x-0 -top-4 bottom-2"
+          style={{ background: 'radial-gradient(ellipse 60% 55% at 50% 50%, rgba(0,0,0,0.5), transparent 75%)' }}
+          aria-hidden="true"
+        />
+        <div className="relative">
+          <PartnerBanner />
+        </div>
       </m.div>
     </section>
   );

@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { GeistMono } from 'geist/font/mono';
 import PageHeader from '@/app/components/PageHeader';
 import SectionTitle from '@/app/components/SectionTitle';
 import ArrowLink from '@/app/components/ArrowLink';
@@ -72,10 +73,16 @@ function CoverFallback({ event }: { event: NetworkEvent }) {
   );
 }
 
+/** The venue alone, without the street address: "Brew Coffee Spot, 6101 Lake Murray Blvd" becomes "Brew Coffee Spot". */
+function venue(event: NetworkEvent) {
+  const name = event.location?.split(',')[0].trim();
+  return name && !/\btbd\b/i.test(name) ? name : null;
+}
+
 /** One upcoming event: the Luma cover on the left, the details and RSVP on the right. */
 function UpcomingEvent({ event, priority }: { event: NetworkEvent; priority: boolean }) {
   const title = cleanTitle(event.title);
-  const place = [event.location, chapterTag(event)].filter(Boolean).join(' · ');
+  const where = venue(event);
 
   return (
     <article className="grid gap-7 py-10 first:pt-0 last:pb-0 md:grid-cols-12 md:gap-10 md:py-12 lg:gap-14">
@@ -101,17 +108,17 @@ function UpcomingEvent({ event, priority }: { event: NetworkEvent; priority: boo
       </a>
 
       <div className="flex flex-col md:col-span-7">
-        <time dateTime={event.startDate} className="font-display text-5xl md:text-6xl leading-none tracking-tight text-white">
-          {inZone(event, event.startDate, { month: 'short', day: 'numeric' })}
-        </time>
-        <p className="mt-3 text-sm text-white/55">
-          {inZone(event, event.startDate, { weekday: 'long' })} · {timeRange(event)}
-        </p>
-
-        <h3 className="mt-8 font-display text-2xl md:text-3xl leading-snug tracking-tight text-white" style={{ textWrap: 'balance' }}>
+        <h3 className="font-display text-3xl md:text-4xl leading-tight tracking-tight text-white" style={{ textWrap: 'balance' }}>
           {title}
         </h3>
-        {place && <p className="mt-2 text-sm text-white/45">{place}</p>}
+        <p className="mt-3 text-sm md:text-[15px] text-white/55">
+          <time dateTime={event.startDate}>
+            {inZone(event, event.startDate, { weekday: 'long', month: 'long', day: 'numeric' })}
+          </time>
+          {' · '}
+          {timeRange(event)}
+          {where && ` · @ ${where}`}
+        </p>
         {event.summary && (
           <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-white/65 line-clamp-5">{event.summary}</p>
         )}
@@ -121,7 +128,7 @@ function UpcomingEvent({ event, priority }: { event: NetworkEvent; priority: boo
             href={event.eventUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-medium text-black transition-colors duration-150 hover:bg-white/85"
+            className={`${GeistMono.className} inline-flex items-center gap-2 rounded-md bg-white px-5 py-2.5 text-sm font-medium uppercase tracking-wider text-black transition-colors duration-150 hover:bg-white/85`}
           >
             RSVP
             <ArrowUpRight className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
@@ -206,7 +213,7 @@ export default function EventsView({ events, failed }: { events: NetworkEvent[];
       <section className="relative px-4 sm:px-6 lg:px-8 pb-20 md:pb-28">
         <div className="max-w-6xl mx-auto">
           <MotionSection>
-            <SectionTitle>Upcoming events</SectionTitle>
+            <SectionTitle size="sm">Upcoming events</SectionTitle>
           </MotionSection>
 
           {failed ? (
@@ -231,7 +238,7 @@ export default function EventsView({ events, failed }: { events: NetworkEvent[];
         <section id="archive" className="relative scroll-mt-20 pb-14 md:pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <MotionSection>
-              <SectionTitle>Past events</SectionTitle>
+              <SectionTitle size="sm">Past events</SectionTitle>
             </MotionSection>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3" role="group" aria-label="Filter past events">

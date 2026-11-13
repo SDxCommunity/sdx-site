@@ -38,7 +38,7 @@ export default function MotionGrid({
         visible: {
           transition: {
             staggerChildren: staggerDelay,
-            delayChildren: 0.1,
+            delayChildren: 0,
           },
         },
       }}
