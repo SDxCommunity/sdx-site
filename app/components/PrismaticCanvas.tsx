@@ -12,6 +12,8 @@ interface PrismaticCanvasProps {
   className?: string;
   intensity?: 'subtle' | 'medium' | 'vivid';
   palette?: 'full' | 'cool' | 'warm';
+  /** Exact colors for the field. Overrides `palette` when set. */
+  colors?: readonly string[];
   glitchFrequency?: 'none' | 'rare' | 'occasional';
 }
 
@@ -31,9 +33,10 @@ const PrismaticCanvas: React.FC<PrismaticCanvasProps> = ({
   className = '',
   intensity = 'subtle',
   palette = 'full',
+  colors: customColors,
 }) => {
   const config = INTENSITY_CONFIG[intensity];
-  const colors = PALETTE_COLORS[palette];
+  const colors = customColors ?? PALETTE_COLORS[palette];
   const containerRef = useRef<HTMLDivElement>(null);
   const [isNear, setIsNear] = useState(false);
 

@@ -5,6 +5,7 @@ import { animate, useInView } from 'motion/react';
 import { EASE_SOFT } from '@/lib/motion';
 import PrismaticCanvas from '@/app/components/PrismaticCanvas';
 import media from '../lib/media';
+import { UCSD_FIELDS } from '../lib/theme';
 
 const stats = [
   { value: media.stats.attendees, suffix: '+', label: 'attendees hosted' },
@@ -40,7 +41,7 @@ export default function SpecStrip() {
     <div className="relative z-10 w-full max-w-4xl mx-auto px-4">
       {/* Same mouse-reactive color field as the closing "Start building" section */}
       <div className="relative overflow-hidden rounded-sm border border-white/10 bg-black">
-        <PrismaticCanvas intensity="medium" />
+        <PrismaticCanvas intensity="medium" colors={UCSD_FIELDS} />
         {/* Text ignores the pointer so mouse moves reach the canvas underneath */}
         <div className="pointer-events-none relative z-10 grid grid-cols-3 divide-x divide-white/10 py-7 md:py-9">
           {stats.map((stat) => (
