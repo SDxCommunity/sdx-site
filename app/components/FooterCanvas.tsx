@@ -4,12 +4,84 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasSettings } from './CanvasSettingsContext';
 import { buildFireWorkerSource, resolveSpaceMonoFontUrl, supportsOffscreenCanvas } from './footerFireWorker';
 
-const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
+/** Each site's footer: the main site's spectrum, UCSD's blue and gold, SDSU's reds. */
+export type FooterTheme = 'main' | 'ucsd' | 'sdsu';
+
+const bands = (spec: [string, number][]) => spec.flatMap(([color, count]) => Array<string>(count).fill(color));
+
+const FIRE_COLORS: Record<FooterTheme, string[]> = {
+  // Rainbow mapped to character density: blue (sparse, top) to orange (dense, bottom)
+  main: [
+    '#035593', // blue — sparsest
+    '#035593',
+    '#035593',
+    '#035593',
+    '#035593',
+    '#11BBCD', // cyan
+    '#11BBCD',
+    '#11BBCD',
+    '#11BBCD',
+    '#11BBCD',
+    '#11BBCD',
+    '#11BBCD',
+    '#03C661', // green
+    '#03C661',
+    '#03C661',
+    '#03C661',
+    '#03C661',
+    '#03C661',
+    '#03C661',
+    '#fac205', // yellow
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fac205',
+    '#fc5715', // orange — densest
+    '#fc5715',
+    '#fc5715',
+    '#fc5715',
+    '#fc5715',
+    '#fc5715',
+    '#fc5715',
+  ],
+  ucsd: bands([
+    ['#0B3A6E', 5],
+    ['#00629B', 7],
+    ['#2F8FE8', 7],
+    ['#C69214', 8],
+    ['#FFCD00', 9],
+  ]),
+  sdsu: bands([
+    ['#4A0D17', 5],
+    ['#8A1A2B', 7],
+    ['#C8323F', 7],
+    ['#E5484D', 9],
+    ['#F0969B', 8],
+  ]),
+};
+
+/** Cell shapes match each site's hero: squares for the main site and UCSD, diamonds for SDSU. */
+const CELL_CLIP: Record<FooterTheme, string> = {
+  main: '',
+  ucsd: '',
+  sdsu: 'polygon(50% 0, 100% 50%, 50% 100%, 0 50%)',
+};
+
+const FooterCanvas: React.FC<{ className?: string; theme?: FooterTheme }> = ({ className = '', theme = 'main' }) => {
   const { settings } = useCanvasSettings();
   const rootRef = useRef<HTMLDivElement>(null);
   // The footer sits below the fold on first load — don't spin up the grid
   // build + rAF/mouse-tracking engine until it's about to scroll into view.
   const [isNear, setIsNear] = useState(false);
+  // The footer stays hidden until its first fire frame is drawn in the final font, then fades in,
+  // so a refresh never flashes bare cells or swaps glyphs.
+  const [ready, setReady] = useState(false);
+  const readyRef = useRef(false);
   const gooRef = useRef<HTMLDivElement>(null);
   const cellsRef = useRef<HTMLDivElement[]>([]);
   // Parallel plain-number arrays for per-cell home position + current/
@@ -61,45 +133,8 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
   // Characters ordered by density: sparse → dense
   const fireChars = ' .`-\'_,^:;~=><+!?*/\\)s(d{x}[S]D|X#%&@';
 
-  // Rainbow colors mapped to character density: blue (sparse/top) → orange (dense/bottom)
-  const fireColors = [
-    '#035593', // blue — sparsest
-    '#035593',
-    '#035593',
-    '#035593',
-    '#035593',
-    '#11BBCD', // cyan
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#03C661', // green
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#fac205', // yellow
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fc5715', // orange — densest
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-  ];
+  // Fire colors run from sparse glyphs (top) to dense ones (bottom), in the page's theme.
+  const fireColors = FIRE_COLORS[theme];
 
   // Simple seeded noise for fire turbulence
   const noiseTable = useRef<Float32Array | null>(null);
@@ -187,6 +222,7 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
           height: `${cellSize}px`,
           background: 'white',
           borderRadius: '0%',
+          clipPath: CELL_CLIP[theme],
           transform: 'translate(-50%, -50%)',
           translate: '0px 0px',
           willChange: 'transform, translate',
@@ -323,6 +359,13 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
       observer.disconnect();
       document.removeEventListener('visibilitychange', syncWorkerPause);
     };
+  }, [isNear]);
+
+  // If no frame report arrives, show the footer anyway.
+  useEffect(() => {
+    if (!isNear) return;
+    const timer = setTimeout(() => setReady(true), 1500);
+    return () => clearTimeout(timer);
   }, [isNear]);
 
   // Mouse interaction + ASCII fire rendering
@@ -568,6 +611,10 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
               ctx.drawImage(atlasCanvas, charIdx * cellW, 0, cellW, cellH, c * charWidth - LEFT_PAD, py - TOP_PAD, cellW, cellH);
             }
           }
+          if (!readyRef.current && document.fonts?.status !== 'loading') {
+            readyRef.current = true;
+            setReady(true);
+          }
         }
       }
 
@@ -650,6 +697,7 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
       console.error('[FooterCanvas] fire worker error', err);
     };
     worker.onmessage = (ev: MessageEvent) => {
+      if (ev.data?.type === 'ready') setReady(true);
       if (ev.data?.type === 'fontLoaded' || ev.data?.type === 'fontFailed') {
         const flag = (window as unknown as { __sdxFooterFire?: Record<string, unknown> }).__sdxFooterFire;
         if (flag) flag.fontStatus = ev.data.type;
@@ -689,6 +737,7 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
     <div
       ref={rootRef}
       className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+      style={{ opacity: ready ? 1 : 0, transition: 'opacity 400ms ease-out' }}
       aria-hidden="true"
     >
       {/* SVG Goo Filter */}

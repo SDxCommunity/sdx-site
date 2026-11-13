@@ -21,13 +21,38 @@ type PageHeaderProps = {
   tone?: keyof typeof GLOWS;
   /** Actions under the subtitle, such as an ArrowLink. */
   children?: React.ReactNode;
+  /** A link on the title's line, at the right edge. */
+  aside?: React.ReactNode;
+  /** "md" sets a smaller title. */
+  size?: 'lg' | 'md';
+};
+
+const TITLE_SIZES = {
+  lg: 'text-[clamp(2.75rem,9vw,6.5rem)]',
+  md: 'text-[clamp(2.5rem,7vw,5rem)]',
 };
 
 /**
  * The header for every inner page: a letter-staggered title over a faint ASCII
  * drift field, with the same soft color pools as the chapter home.
  */
-export default function PageHeader({ title, outlineFrom, subtitle, tone = 'full', children }: PageHeaderProps) {
+export default function PageHeader({
+  title,
+  outlineFrom,
+  subtitle,
+  tone = 'full',
+  children,
+  aside,
+  size = 'lg',
+}: PageHeaderProps) {
+  const heading = (
+    <StaggerTitle
+      text={title}
+      outlineFrom={outlineFrom}
+      className={`font-display ${TITLE_SIZES[size]} leading-[0.95] tracking-tight text-white prismatic-glow select-none`}
+    />
+  );
+
   return (
     <section className="relative overflow-hidden px-4 sm:px-6 lg:px-8 pt-36 md:pt-44 pb-14 md:pb-20">
       <div
@@ -38,11 +63,21 @@ export default function PageHeader({ title, outlineFrom, subtitle, tone = 'full'
       <AsciiDrift />
 
       <div className="relative z-[1] max-w-6xl mx-auto">
-        <StaggerTitle
-          text={title}
-          outlineFrom={outlineFrom}
-          className="font-display text-[clamp(2.75rem,9vw,6.5rem)] leading-[0.95] tracking-tight text-white prismatic-glow select-none"
-        />
+        {aside ? (
+          <div className="flex items-baseline justify-between gap-6">
+            {heading}
+            <m.div
+              className="shrink-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+            >
+              {aside}
+            </m.div>
+          </div>
+        ) : (
+          heading
+        )}
 
         {subtitle && (
           <m.p

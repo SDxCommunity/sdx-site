@@ -16,7 +16,6 @@ import { SDX_JOIN } from '@/lib/links';
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/events', label: 'Events' },
-  { href: '/members', label: 'Members' },
   { href: '/chapters', label: 'Chapters' },
 ];
 
@@ -85,7 +84,7 @@ const Navigation: React.FC = () => {
             </Link>
           </LogoContextMenu>
 
-          {/* Desktop links — in flow on tablets, absolutely centered from lg so they never overlap the actions */}
+          {/* Desktop links, centered from lg so they never overlap the actions */}
           {!onUcsdChapter && (
             <div className="hidden md:flex items-center gap-1 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               {navLinks.map((link) => (
@@ -104,16 +103,6 @@ const Navigation: React.FC = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
-            {!onUcsdChapter && (
-              <Link
-                href="/executives"
-                onClick={() => handleLinkClick('/executives')}
-                aria-current={isActive('/executives') ? 'page' : undefined}
-                className={`hidden md:block ${linkClass('/executives')}`}
-              >
-                Executives
-              </Link>
-            )}
             {joinButton}
 
             {/* Mobile menu */}
@@ -129,7 +118,7 @@ const Navigation: React.FC = () => {
                   <SheetContent side="right" className="w-[280px] bg-black/95 backdrop-blur-md border-white/5 p-0">
                     <SheetTitle className="sr-only">Menu</SheetTitle>
                     <div className="flex flex-col pt-14">
-                      {[...navLinks, { href: '/executives', label: 'Executives' }].map((link) => (
+                      {navLinks.map((link) => (
                         <Link
                           key={link.href}
                           href={link.href}

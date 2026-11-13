@@ -22,7 +22,7 @@ export default function MotionGrid({
 
   // Latch: once visible, stay visible forever
   useEffect(() => {
-    if (isInView && phase === 'idle' && !locked) {
+    if (isInView && phase !== 'cover' && !locked) {
       setLocked(true);
     }
   }, [isInView, phase, locked]);

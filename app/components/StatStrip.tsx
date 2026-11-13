@@ -14,7 +14,7 @@ export type Stat = {
   decimals?: number;
 };
 
-function Count({ to, prefix = '', suffix = '', decimals = 0 }: Omit<Stat, 'label' | 'value'> & { to: number }) {
+export function Count({ to, prefix = '', suffix = '', decimals = 0 }: Omit<Stat, 'label' | 'value'> & { to: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: '-60px' });
   const [val, setVal] = useState(0);

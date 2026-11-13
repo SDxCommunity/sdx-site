@@ -27,7 +27,7 @@ export default function MotionSection({
 
   // Latch: once visible, stay visible forever — never animate back out
   useEffect(() => {
-    if (isInView && phase === 'idle' && !locked) {
+    if (isInView && phase !== 'cover' && !locked) {
       setLocked(true);
     }
   }, [isInView, phase, locked]);

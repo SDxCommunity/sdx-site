@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Light to dense: the blob edge gets the light glyphs, the core gets the dense ones.
 const GLYPHS = '.:-=+*#';
@@ -41,6 +41,9 @@ function makeBalls(w: number, h: number): Ball[] {
 export default function AsciiDrift({ className = '' }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Hidden until the first frame is drawn, then faded in, so a refresh does not pop the glyphs in.
+  const [ready, setReady] = useState(false);
+  const readyRef = useRef(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -103,6 +106,10 @@ export default function AsciiDrift({ className = '' }: { className?: string }) {
         }
         ctx.fillText(line, 0, r * FONT_SIZE);
       }
+      if (!readyRef.current) {
+        readyRef.current = true;
+        setReady(true);
+      }
     };
 
     const tick = (now: number) => {
@@ -143,7 +150,8 @@ export default function AsciiDrift({ className = '' }: { className?: string }) {
       ref={containerRef}
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}
       style={{
-        opacity: 0.12,
+        opacity: ready ? 0.12 : 0,
+        transition: 'opacity 400ms ease-out',
         maskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
         WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)',
       }}

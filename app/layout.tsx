@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { tiposka, spaceMono } from '@/app/ui/fonts';
 import Navigation from '@/app/components/Navigation';
 import Footer from '@/app/components/Footer';
-import LoadingStinger from '@/app/components/LoadingStinger';
 import PageTransition from '@/app/components/PageTransition';
 import MotionProvider from '@/app/components/motion/MotionProvider';
 import { CanvasSettingsProvider } from '@/app/components/CanvasSettingsContext';
@@ -27,7 +26,6 @@ export default function RootLayout({
       <body className={`${tiposka.variable} ${spaceMono.variable} font-mono bg-background text-foreground`}>
         <CanvasSettingsProvider>
           <MotionProvider>
-            <LoadingStinger />
             <Navigation />
             <PageTransition>
               {children}

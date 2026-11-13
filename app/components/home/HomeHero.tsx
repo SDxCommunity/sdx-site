@@ -6,8 +6,7 @@ import { m, useScroll, useTransform } from 'motion/react';
 import { EASE_SOFT } from '@/lib/motion';
 import BackgroundEffects from '@/app/components/BackgroundEffects';
 import MetaballCanvas from '@/app/components/MetaballCanvas';
-import StaggerTitle from '@/app/components/StaggerTitle';
-import StatStrip from '@/app/components/StatStrip';
+import GlitchTitle from '@/app/components/GlitchTitle';
 import SdxJoinRow from '@/app/components/SdxJoinRow';
 
 const partnerLogos: { src: string; alt: string; className?: string }[] = [
@@ -25,111 +24,100 @@ const partnerLogos: { src: string; alt: string; className?: string }[] = [
   { src: '/sponsors/yc.svg', alt: 'Y Combinator' },
 ];
 
-const stats = [
-  { value: 3000, suffix: '+', label: 'builders' },
-  { value: 50, suffix: '+', label: 'events hosted' },
-  { value: 15, suffix: '+', label: 'startups built' },
-];
-
-function Partners() {
+/** The partner logos on a loop, with no label. */
+function PartnerBanner() {
   return (
-    <div className="mt-14 md:mt-16">
-      <p className="mb-5 text-center text-sm text-white/50">Partners</p>
-      <div
-        className="overflow-hidden w-full"
-        style={{
-          maskImage: 'linear-gradient(to right, transparent 0%, white 8%, white 92%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, white 8%, white 92%, transparent 100%)',
-        }}
-      >
-        <div className="animate-marquee flex w-max">
-          {[partnerLogos, partnerLogos].map((set, setIndex) => (
-            <div key={setIndex} className="flex shrink-0" aria-hidden={setIndex === 1 ? true : undefined}>
-              {set.map((logo) => (
-                <div key={logo.alt} className="flex items-center justify-center mx-6">
-                  <Image
-                    src={logo.src}
-                    alt={setIndex === 1 ? '' : logo.alt}
-                    width={96}
-                    height={48}
-                    className={logo.className || 'w-24 h-12 object-contain'}
-                  />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+    <div
+      className="overflow-hidden w-full"
+      aria-label="SDx partners"
+      style={{
+        maskImage: 'linear-gradient(to right, transparent 0%, white 10%, white 90%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to right, transparent 0%, white 10%, white 90%, transparent 100%)',
+      }}
+    >
+      <div className="animate-marquee flex w-max">
+        {[partnerLogos, partnerLogos].map((set, setIndex) => (
+          <div key={setIndex} className="flex shrink-0" aria-hidden={setIndex === 1 ? true : undefined}>
+            {set.map((logo) => (
+              <div key={logo.alt} className="flex items-center justify-center mx-7">
+                <Image
+                  src={logo.src}
+                  alt={setIndex === 1 ? '' : logo.alt}
+                  width={96}
+                  height={48}
+                  className={`${logo.className || 'w-24 h-12 object-contain'} opacity-70`}
+                />
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-/** Home hero: the same blob field, title rise, and stats strip as the chapter home. */
+/** Home hero: the SDx name, which glitches under the pointer, over a field of x cells. The partners run along the bottom. */
 export default function HomeHero() {
   const copyRef = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   const contentOpacity = useTransform(scrollY, [0, 480], [1, 0]);
   const contentY = useTransform(scrollY, [0, 480], [0, -56]);
-  const fieldOpacity = useTransform(scrollY, [0, 900], [1, 0.5]);
+  const fieldOpacity = useTransform(scrollY, [0, 900], [1, 0.4]);
 
   return (
-    <section className="relative flex flex-col overflow-hidden">
-      {/* ── Background layer ── */}
+    <section className="relative flex min-h-[100svh] flex-col overflow-hidden">
+      {/* The chapters' cell field, cut into x's and washed in a soft spectrum */}
       <m.div className="absolute inset-0 w-screen overflow-hidden" style={{ opacity: fieldOpacity }} aria-hidden="true">
         <BackgroundEffects />
-        <MetaballCanvas bottomFade="none" clearAround={copyRef} />
+        <MetaballCanvas bottomFade="none" clearAround={copyRef} cellShape="x" tint="prismatic" />
         {/*
-          Mirrors the top bar: the blobs fade out over the last 3.5rem of the first
-          screen (the bar's height) and stay black below it.
+          Dims the cells under the partner logos without blacking them out, so the field still shows
+          through. It reaches full black only at the very bottom, so the next section has no seam.
         */}
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 top-[calc(100svh-3.5rem)]"
-          style={{ background: 'linear-gradient(to bottom, transparent, black 3.5rem)' }}
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-56"
+          style={{ background: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.55) 85%, #000 100%)' }}
         />
       </m.div>
 
-      {/* ── Hero copy — fills the first screen so the stats start below the fold ── */}
       <m.div
-        className="relative z-10 min-h-[100svh] flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-20 pb-8"
+        className="relative z-10 flex flex-1 flex-col items-center justify-center text-center px-4 sm:px-6 pt-24 pb-6"
         style={{ opacity: contentOpacity, y: contentY }}
       >
-        {/* The blob field clears an area around this block, so blobs wrap the copy */}
         <div ref={copyRef} className="flex flex-col items-center">
-          <StaggerTitle
-            text="Build here."
-            className="relative font-display text-[clamp(3.25rem,11vw,9.5rem)] leading-[0.95] tracking-tight text-white prismatic-glow select-none"
+          <GlitchTitle
+            text="SDx"
+            className="font-display text-[clamp(6rem,27vw,17rem)] leading-[0.9] tracking-tight select-none"
           />
 
           <m.p
-            className="relative mt-8 max-w-xl text-base md:text-lg leading-relaxed text-white/70"
+            className="relative mt-6 max-w-2xl text-base md:text-lg leading-relaxed text-white/70"
+            style={{ textWrap: 'balance' }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.5 }}
+            transition={{ duration: 0.9, ease: EASE_SOFT, delay: 0.45 }}
           >
-            San Diego&apos;s builder-first technology community.
+            the next-gen startup ecosystem for builders in San Diego.
           </m.p>
 
           <m.div
             className="relative mt-10"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.0, ease: EASE_SOFT, delay: 0.65 }}
+            transition={{ duration: 0.9, ease: EASE_SOFT, delay: 0.6 }}
           >
             <SdxJoinRow track="hero" />
           </m.div>
         </div>
       </m.div>
 
-      {/* Stats and partners — just below the fold, fading in on the first scroll */}
       <m.div
-        className="relative z-10 pt-10 md:pt-14 pb-16 md:pb-20"
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-60px' }}
-        transition={{ duration: 1.0, ease: EASE_SOFT }}
+        className="relative z-10 pb-10 md:pb-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.9, ease: EASE_SOFT, delay: 0.8 }}
       >
-        <StatStrip stats={stats} />
-        <Partners />
+        <PartnerBanner />
       </m.div>
     </section>
   );

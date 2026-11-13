@@ -3,6 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { useSelectedLayoutSegments } from 'next/navigation';
+import type { FooterTheme } from './FooterCanvas';
 import { sendGAEvent } from '@next/third-parties/google';
 import MotionSection from '@/app/components/motion/MotionSection';
 import { DiscordIcon, InstagramIcon, LinkedInIcon, TwitterIcon } from '@/app/components/SocialIcons';
@@ -21,13 +23,19 @@ const socials = [
 ];
 
 const Footer: React.FC = () => {
+  // Route segments see the rewritten route on chapter subdomains; the pathname does not.
+  const segments = useSelectedLayoutSegments();
+  const theme: FooterTheme =
+    segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu') ? segments[1] : 'main';
+
   const handleLinkClick = (linkUrl: string, label: string) => {
     sendGAEvent('clicked', { link_url: linkUrl, label });
   };
 
   return (
     <footer className="relative pt-16 overflow-hidden">
-      <FooterCanvas />
+      {/* Remount on a theme change, so the canvas rebuilds in the new colors */}
+      <FooterCanvas key={theme} theme={theme} />
 
       <MotionSection className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -58,8 +66,8 @@ const Footer: React.FC = () => {
             <h3 className={headingClass}>Navigate</h3>
             <ul className="space-y-2">
               {[
+                { href: '/', label: 'Home' },
                 { href: '/events', label: 'Events' },
-                { href: '/members', label: 'Members' },
                 { href: '/chapters', label: 'Chapters' },
               ].map((link) => (
                 <li key={link.href}>
@@ -78,7 +86,6 @@ const Footer: React.FC = () => {
               {[
                 { href: 'https://lu.ma/sdx', label: 'Events Calendar', external: true },
                 { href: 'https://discord.gg/Rkgyzx2ykV', label: 'Discord', external: true },
-                { href: '/executives', label: 'Executive Network', external: false },
                 { href: 'mailto:hello@sdx.community', label: 'Contact', external: false },
               ].map((link) => (
                 <li key={link.href}>

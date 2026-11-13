@@ -11,6 +11,14 @@ export const SERIES_LABELS: Record<Series, string> = {
   other: 'Other',
 };
 
+/** Each series' color, for dots and tiles that have no cover. */
+export const SERIES_ACCENT: Record<Series, string> = {
+  'paper-club': '#11BBCD',
+  'ai-coffee': '#FAC205',
+  'hack-days': '#FC5715',
+  other: '#03C661',
+};
+
 export function eventSeries(title: string): Series {
   if (/paper club/i.test(title)) return 'paper-club';
   if (/ai coffee/i.test(title)) return 'ai-coffee';
