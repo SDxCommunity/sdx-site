@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import { useSelectedLayoutSegments } from 'next/navigation';
 import { m, AnimatePresence } from 'motion/react';
 import { Palette, Copy, Image, Loader2 } from 'lucide-react';
 
@@ -43,6 +44,11 @@ function buildSvgWithFont(text: string, fontB64: string, fill = 'white'): string
 }
 
 export default function LogoContextMenu({ children }: LogoContextMenuProps) {
+  // A chapter subdomain rewrites relative paths into the chapter, where /brand does not
+  // exist. There the Brand link names the main domain.
+  const segments = useSelectedLayoutSegments();
+  const onChapterSite = segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu');
+  const brandHref = onChapterSite ? 'https://www.sdx.community/brand' : '/brand';
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [copied, setCopied] = useState<string | null>(null);
@@ -160,7 +166,7 @@ export default function LogoContextMenu({ children }: LogoContextMenuProps) {
             transition={{ type: 'spring', bounce: 0.15, duration: 0.2 }}
           >
             <Link
-              href="/brand"
+              href={brandHref}
               onClick={close}
               className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.06] transition-colors duration-150"
             >

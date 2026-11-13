@@ -1,8 +1,22 @@
 /** Chapters served on their own subdomain: <chapter>.sdx.community -> /chapters/<chapter>. */
 const CHAPTER_SUBDOMAINS = ['ucsd', 'sdsu'];
 
+/** Chapters whose old main-site path, /chapters/<chapter>, now sends visitors to the subdomain. */
+const REDIRECTED_CHAPTERS = ['sdsu'];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    // Give the chapter one home: www.sdx.community/chapters/sdsu/x -> sdsu.sdx.community/x.
+    // Only the main host redirects, so the subdomain's own rewrite and localhost are unaffected.
+    // Temporary (307), so the move stays easy to undo.
+    return REDIRECTED_CHAPTERS.map((chapter) => ({
+      source: `/chapters/${chapter}/:path*`,
+      has: [{ type: 'host', value: '(www\\.)?sdx\\.community' }],
+      destination: `https://${chapter}.sdx.community/:path*`,
+      permanent: false,
+    }));
+  },
   async rewrites() {
     // Serve each chapter at its subdomain, for example ucsd.sdx.community. These must be
     // `beforeFiles`: a plain array is treated as `afterFiles`, which only runs when no
