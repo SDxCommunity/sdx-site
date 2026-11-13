@@ -1,6 +1,6 @@
 /*
- * The SDSU hero title types itself out, one letter per step, behind a red block
- * cursor. The UCSD hero slides its letters up instead.
+ * The SDSU hero title types itself out, one letter per step, behind a rose
+ * cursor. The UCSD hero types the same way behind a gold one.
  *
  * Each letter appears at --letter-delay. Its ::after is the cursor, shown for one
  * step (--step) until the next letter takes over. The last letter's cursor blinks
