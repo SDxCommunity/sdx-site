@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import MotionSection from '@/app/components/motion/MotionSection';
 import MotionGrid from '@/app/components/motion/MotionGrid';
@@ -16,6 +15,7 @@ type Shape = 'square' | 'diamond';
 type Chapter = {
   name: string;
   school: string;
+  /** The chapter's own site, on its subdomain. */
   href?: string;
   /** A campus photo under /public. Until the file exists, the card shows the chapter's cell pattern. */
   photo: string;
@@ -28,7 +28,7 @@ const chapters: Chapter[] = [
   {
     name: 'SDxUCSD',
     school: 'University of California San Diego',
-    href: '/chapters/ucsd',
+    href: 'https://ucsd.sdx.community',
     photo: '/campus/ucsd.jpg',
     shape: 'square',
     colors: ['#2F8FE8', '#2F8FE8', '#2F8FE8', '#FFCD00'],
@@ -36,7 +36,7 @@ const chapters: Chapter[] = [
   {
     name: 'SDxSDSU',
     school: 'San Diego State University',
-    href: '/chapters/sdsu',
+    href: 'https://sdsu.sdx.community',
     photo: '/campus/sdsu.jpg',
     shape: 'diamond',
     colors: ['#E5484D', '#E5484D', '#FF8A8E'],
@@ -140,12 +140,12 @@ function ChapterCard({ chapter, index }: { chapter: Chapter; index: number }) {
     );
   }
   return (
-    <Link
-      href={chapter.href!}
+    <a
+      href={chapter.href}
       className="group flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.015] transition-colors duration-200 hover:border-white/25"
     >
       {body}
-    </Link>
+    </a>
   );
 }
 
