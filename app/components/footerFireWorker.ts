@@ -10,7 +10,7 @@
 export interface FireWorkerParams {
   charFontSize: number;
   fireChars: string;
-  fireColors: string[];
+  fireColors: readonly string[];
 }
 
 export function supportsOffscreenCanvas(canvas: HTMLCanvasElement): boolean {

@@ -59,10 +59,10 @@
   animation: ucsdCursorBlink 0.5s steps(1, end) var(--letter-delay, 0s) 4 forwards;
 }
 
-/* The site's white title glow with a faint gold edge */
+/* The site's white title glow with a faint blue edge. The cursor stays gold. */
 .glow {
   --ucsd-gold-bright: #f0c864;
-  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.28)) drop-shadow(0 0 40px rgba(240, 200, 100, 0.16))
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.28)) drop-shadow(0 0 40px rgba(132, 176, 236, 0.16))
     drop-shadow(0 0 80px rgba(255, 255, 255, 0.06));
 }
 

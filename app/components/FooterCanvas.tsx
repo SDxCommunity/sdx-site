@@ -3,8 +3,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasSettings } from './CanvasSettingsContext';
 import { buildFireWorkerSource, resolveSpaceMonoFontUrl, supportsOffscreenCanvas } from './footerFireWorker';
+import { DEFAULT_FIRE_COLORS } from './footerFireColors';
 
-const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
+type FooterCanvasProps = {
+  className?: string;
+  /** One color per fire glyph, sparsest to densest. A chapter passes its accent here. */
+  fireColors?: readonly string[];
+};
+
+const FooterCanvas: React.FC<FooterCanvasProps> = ({ className = '', fireColors: customFireColors }) => {
   const { settings } = useCanvasSettings();
   const rootRef = useRef<HTMLDivElement>(null);
   // The footer sits below the fold on first load — don't spin up the grid
@@ -61,45 +68,7 @@ const FooterCanvas: React.FC<{ className?: string }> = ({ className = '' }) => {
   // Characters ordered by density: sparse → dense
   const fireChars = ' .`-\'_,^:;~=><+!?*/\\)s(d{x}[S]D|X#%&@';
 
-  // Rainbow colors mapped to character density: blue (sparse/top) → orange (dense/bottom)
-  const fireColors = [
-    '#035593', // blue — sparsest
-    '#035593',
-    '#035593',
-    '#035593',
-    '#035593',
-    '#11BBCD', // cyan
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#11BBCD',
-    '#03C661', // green
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#03C661',
-    '#fac205', // yellow
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fac205',
-    '#fc5715', // orange — densest
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-    '#fc5715',
-  ];
+  const fireColors = customFireColors ?? DEFAULT_FIRE_COLORS;
 
   // Simple seeded noise for fire turbulence
   const noiseTable = useRef<Float32Array | null>(null);

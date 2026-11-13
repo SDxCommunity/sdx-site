@@ -7,8 +7,8 @@ import MotionSection from '@/app/components/motion/MotionSection';
 import media from '../lib/media';
 import { UCSD_LUMA_PAST } from '../lib/links';
 
-/** The wash over each event photo: blue and gold in turn. */
-const TILE_WASHES = ['#3a86d4', '#FAC205'];
+/** The wash over each event photo: blue, with one gold tile. */
+const TILE_WASHES = ['#3a86d4', '#3a86d4', '#FAC205', '#3a86d4'];
 
 export default function About() {
   return (
@@ -17,7 +17,7 @@ export default function About() {
         className="pointer-events-none absolute inset-0 opacity-40"
         style={{
           background:
-            'radial-gradient(ellipse 60% 50% at 80% 30%, rgba(132,176,236,0.1), transparent 60%), radial-gradient(ellipse 40% 40% at 10% 80%, rgba(240,200,100,0.07), transparent 55%)',
+            'radial-gradient(ellipse 60% 50% at 80% 30%, rgba(132,176,236,0.12), transparent 60%), radial-gradient(ellipse 40% 40% at 10% 80%, rgba(240,200,100,0.05), transparent 55%)',
         }}
         aria-hidden="true"
       />
@@ -30,7 +30,7 @@ export default function About() {
               <h2 className="font-display text-3xl md:text-5xl text-white tracking-tight leading-[1.08] prismatic-glow-sm">
                 What we do
               </h2>
-              <ul className="mt-8 space-y-4 text-sm md:text-base text-white/70 leading-relaxed max-w-md list-disc pl-5 marker:text-[#f0c864]/60">
+              <ul className="mt-8 space-y-4 text-sm md:text-base text-white/70 leading-relaxed max-w-md list-disc pl-5 marker:text-[#84b0ec]/60">
                 <li>
                   Host weekly demo days, where students show what they are building with AI
                   and get feedback from peers

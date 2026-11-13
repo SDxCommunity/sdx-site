@@ -6,6 +6,8 @@ import dynamic from 'next/dynamic';
 import { useSelectedLayoutSegments } from 'next/navigation';
 import { sendGAEvent } from '@next/third-parties/google';
 import MotionSection from '@/app/components/motion/MotionSection';
+import { UCSD_FOOTER_FIRE } from '@/app/chapters/ucsd/lib/theme';
+import { SDSU_FOOTER_FIRE } from '@/app/chapters/sdsu/lib/theme';
 
 // FooterCanvas is a client-only canvas effect below the fold on first
 // load — split it out of the main layout chunk.
@@ -20,6 +22,9 @@ const linkClass = 'text-white/70 hover:text-white transition-colors duration-200
 const Footer: React.FC = () => {
   const segments = useSelectedLayoutSegments();
   const onChapterSite = segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu');
+  const chapter = onChapterSite ? segments[1] : null;
+  // Each chapter colors the ASCII fire with its own accent; the main site keeps the rainbow
+  const fireColors = chapter === 'ucsd' ? UCSD_FOOTER_FIRE : chapter === 'sdsu' ? SDSU_FOOTER_FIRE : undefined;
 
   // The UCSD people lookbook stands alone, with no footer.
   if (onChapterSite && segments[1] === 'ucsd' && segments[2] === 'people') return null;
@@ -35,7 +40,8 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="relative pt-16 overflow-hidden">
-      <FooterCanvas />
+      {/* The canvas hands its colors to a worker once, so a new chapter remounts it */}
+      <FooterCanvas key={chapter ?? 'main'} fireColors={fireColors} />
 
       <MotionSection className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
         {/* On desktop, row 1 sets SDx, Navigate, and Community on one baseline.
