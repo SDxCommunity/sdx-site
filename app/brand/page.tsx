@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { m } from 'motion/react';
 import { Copy, Check, Download, Loader2 } from 'lucide-react';
-import SectionHeader from '@/app/components/SectionHeader';
+import PageHeader from '@/app/components/PageHeader';
 import MotionSection from '@/app/components/motion/MotionSection';
 import MotionGrid from '@/app/components/motion/MotionGrid';
 import MotionCard from '@/app/components/motion/MotionCard';
@@ -127,7 +127,7 @@ function ColorSwatch({ name, hex, hsl, dark }: { name: string; hex: string; hsl?
         </div>
       </div>
       <p className="text-xs font-bold text-white">{name}</p>
-      <p className="text-xs text-white/40 font-mono">{hex}</p>
+      <p className="text-xs text-white/55 font-mono">{hex}</p>
       {hsl && <p className="text-xs text-white/30 font-mono">{hsl}</p>}
     </button>
   );
@@ -146,7 +146,7 @@ function LogoPreview({ title, description, displayText, className = '' }: { titl
           <div className="p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-bold text-white">{title}</p>
-              <p className="text-xs text-white/40">{description}</p>
+              <p className="text-xs text-white/55">{description}</p>
             </div>
             <CopySvgButton text={displayText} />
           </div>
@@ -160,25 +160,18 @@ function LogoPreview({ title, description, displayText, className = '' }: { titl
 
 export default function BrandPage() {
   return (
-    <main className="relative pt-24 px-4 sm:px-6 lg:px-8">
-      {/* Ghosted letterform */}
-      <div className="absolute right-0 top-0 bottom-0 w-[50vw] overflow-hidden" aria-hidden="true">
-        <div className="absolute -right-[20%] top-[30%] -translate-y-1/2 font-display text-[40vw] ghosted-letterform rotate-90 whitespace-nowrap">
-          SDx
-        </div>
-      </div>
+    <main className="relative">
+      <PageHeader
+        title="Brand"
+        subtitle="Assets, colors, and guidelines for the SDx brand. Right-click the logo in the nav to quick-copy."
+      />
 
-      <div className="max-w-7xl mx-auto py-12 relative z-[1]">
-        <SectionHeader
-          title="Brand"
-          subtitle="Assets, colors, and guidelines for the SDx brand. Right-click the logo in the nav to quick-copy."
-          badge="Identity"
-        />
-
+      <div className="relative z-[1] px-4 sm:px-6 lg:px-8 pb-24">
+        <div className="max-w-6xl mx-auto">
         {/* ── Logos ── */}
         <MotionSection className="mb-20">
-          <h2 className="font-display text-2xl text-white mb-2">Logo</h2>
-          <p className="text-sm text-white/40 mb-6">
+          <h2 className="font-display text-2xl md:text-3xl text-white tracking-tight mb-3">Logo</h2>
+          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-white/60 mb-8">
             The SDx wordmark is set in Tiposka. Use the full wordmark as the primary logo. Individual letterforms may be used as marks.
           </p>
           <MotionGrid className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -197,8 +190,8 @@ export default function BrandPage() {
 
         {/* ── Logo on dark / light ── */}
         <MotionSection className="mb-20" delay={0.1}>
-          <h2 className="font-display text-2xl text-white mb-2">Usage</h2>
-          <p className="text-sm text-white/40 mb-6">
+          <h2 className="font-display text-2xl md:text-3xl text-white tracking-tight mb-3">Usage</h2>
+          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-white/60 mb-8">
             The SDx logo is white on dark. On light backgrounds, invert to black. Maintain clear space equal to the height of the &ldquo;x&rdquo; on all sides.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -209,7 +202,7 @@ export default function BrandPage() {
                     <span className="font-display text-5xl text-white tracking-tight">SDx</span>
                   </div>
                   <div className="p-4">
-                    <p className="text-xs text-white/40">White on black &mdash; primary usage</p>
+                    <p className="text-xs text-white/55">White on black &mdash; primary usage</p>
                   </div>
                 </CardContent>
               </Card>
@@ -221,7 +214,7 @@ export default function BrandPage() {
                     <span className="font-display text-5xl text-black tracking-tight">SDx</span>
                   </div>
                   <div className="p-4">
-                    <p className="text-xs text-white/40">Black on white &mdash; inverted</p>
+                    <p className="text-xs text-white/55">Black on white &mdash; inverted</p>
                   </div>
                 </CardContent>
               </Card>
@@ -231,13 +224,13 @@ export default function BrandPage() {
 
         {/* ── Colors ── */}
         <MotionSection className="mb-20" delay={0.1}>
-          <h2 className="font-display text-2xl text-white mb-2">Colors</h2>
-          <p className="text-sm text-white/40 mb-6">
+          <h2 className="font-display text-2xl md:text-3xl text-white tracking-tight mb-3">Colors</h2>
+          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-white/60 mb-8">
             Click any swatch to copy the hex value. These colors are never used in a gradient except when producing iridescent or prismatic effects, similar to the footer CTAs.
           </p>
 
           {/* Core */}
-          <h3 className="text-xs uppercase tracking-widest text-white/30 mb-4">Core</h3>
+          <h3 className="text-sm font-bold text-white/80 mb-4">Core</h3>
           <div className="grid grid-cols-2 gap-4 mb-8">
             {coreColors.map(c => (
               <ColorSwatch key={c.name} {...c} />
@@ -245,22 +238,22 @@ export default function BrandPage() {
           </div>
 
           {/* Brand palette */}
-          <h3 className="text-xs uppercase tracking-widest text-white/30 mb-4">Brand Palette</h3>
+          <h3 className="text-sm font-bold text-white/80 mb-4">Brand palette</h3>
           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-8">
             {brandColors.map(c => (
               <ColorSwatch key={c.name} {...c} />
             ))}
           </div>
 
-          <p className="text-xs text-white/30 mt-2">
+          <p className="max-w-2xl text-xs leading-relaxed text-white/45 mt-2">
             These colors are only ever combined as a gradient for iridescent and prismatic effects, like the footer CTAs. Never use them in flat gradients or as standalone accent fills.
           </p>
         </MotionSection>
 
         {/* ── Typography ── */}
         <MotionSection className="mb-20" delay={0.1}>
-          <h2 className="font-display text-2xl text-white mb-2">Typography</h2>
-          <p className="text-sm text-white/40 mb-6">
+          <h2 className="font-display text-2xl md:text-3xl text-white tracking-tight mb-3">Typography</h2>
+          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-white/60 mb-8">
             Two typefaces. Display for hierarchy, mono for everything else.
           </p>
           <MotionGrid className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -271,7 +264,7 @@ export default function BrandPage() {
                     <span className="font-display text-6xl text-white tracking-tight">Aa</span>
                   </div>
                   <h3 className="text-sm font-bold text-white mb-1">Tiposka</h3>
-                  <p className="text-xs text-white/40 mb-3">Display &mdash; headings, logo, brand text</p>
+                  <p className="text-xs text-white/55 mb-3">Display &mdash; headings, logo, brand text</p>
                   <p className="font-display text-lg text-white/60 tracking-tight">
                     ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />
                     abcdefghijklmnopqrstuvwxyz<br />
@@ -287,7 +280,7 @@ export default function BrandPage() {
                     <span className="font-mono text-6xl text-white tracking-tight">Aa</span>
                   </div>
                   <h3 className="text-sm font-bold text-white mb-1">Space Mono</h3>
-                  <p className="text-xs text-white/40 mb-3">Body &mdash; text, buttons, UI</p>
+                  <p className="text-xs text-white/55 mb-3">Body &mdash; text, buttons, UI</p>
                   <p className="font-mono text-lg text-white/60">
                     ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />
                     abcdefghijklmnopqrstuvwxyz<br />
@@ -301,8 +294,8 @@ export default function BrandPage() {
 
         {/* ── Visual Effects ── */}
         <MotionSection className="mb-20" delay={0.1}>
-          <h2 className="font-display text-2xl text-white mb-2">Effects</h2>
-          <p className="text-sm text-white/40 mb-6">
+          <h2 className="font-display text-2xl md:text-3xl text-white tracking-tight mb-3">Effects</h2>
+          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-white/60 mb-8">
             The SDx visual language uses prismatic glows and outlined letterforms. &ldquo;SDx&rdquo; must always be rendered in Tiposka.
           </p>
           <MotionGrid className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -312,7 +305,7 @@ export default function BrandPage() {
                   <span className="font-display text-5xl text-white prismatic-glow">SDx</span>
                   <div>
                     <p className="text-xs font-bold text-white text-center">Prismatic Glow</p>
-                    <p className="text-xs text-white/40 text-center">Layered white drop-shadows</p>
+                    <p className="text-xs text-white/55 text-center">Layered white drop-shadows</p>
                   </div>
                 </CardContent>
               </Card>
@@ -323,7 +316,7 @@ export default function BrandPage() {
                   <span className="font-display text-5xl text-outline">SDx</span>
                   <div>
                     <p className="text-xs font-bold text-white text-center">Outlined</p>
-                    <p className="text-xs text-white/40 text-center">Stroke-only letterforms</p>
+                    <p className="text-xs text-white/55 text-center">Stroke-only letterforms</p>
                   </div>
                 </CardContent>
               </Card>
@@ -333,8 +326,8 @@ export default function BrandPage() {
 
         {/* ── Guidelines ── */}
         <MotionSection className="mb-20" delay={0.1}>
-          <h2 className="font-display text-2xl text-white mb-2">Guidelines</h2>
-          <p className="text-sm text-white/40 mb-6">
+          <h2 className="font-display text-2xl md:text-3xl text-white tracking-tight mb-3">Guidelines</h2>
+          <p className="max-w-2xl text-sm md:text-base leading-relaxed text-white/60 mb-8">
             A few rules to keep the brand consistent.
           </p>
           <MotionGrid className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -368,7 +361,7 @@ export default function BrandPage() {
                     <h3 className="text-sm font-bold text-white mb-4">{col.title}</h3>
                     <ul className="space-y-2">
                       {col.items.map((item, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-white/50">
+                        <li key={i} className="flex items-start gap-2 text-sm text-white/65">
                           <span className={`mt-0.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${col.title === 'Do' ? 'bg-sdx-teal' : 'bg-red-500'}`} />
                           {item}
                         </li>
@@ -388,7 +381,7 @@ export default function BrandPage() {
               <CardContent className="p-6 flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-white mb-1">Download Logo SVG</h3>
-                  <p className="text-xs text-white/40">Full wordmark in SVG format</p>
+                  <p className="text-xs text-white/55">Full wordmark in SVG format</p>
                 </div>
                 <a
                   href="/sdx-logo-white.svg"
@@ -403,6 +396,7 @@ export default function BrandPage() {
           </MotionCard>
         </MotionSection>
 
+        </div>
       </div>
     </main>
   );

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasSettings } from './CanvasSettingsContext';
 
 type MetaballCanvasProps = {
@@ -12,13 +12,23 @@ type MetaballCanvasProps = {
    * wrap the hero copy on every side with a soft, uneven edge.
    */
   clearAround?: React.RefObject<HTMLElement>;
-  /** "diamond" turns every cell 45°, so the blobs grow faceted edges. */
-  cellShape?: 'square' | 'diamond';
+  /**
+   * "diamond" turns every cell 45°, so the blobs grow faceted edges. "x" cuts each cell into
+   * an x and thins the field. The main site uses x; the chapters keep squares and diamonds.
+   */
+  cellShape?: 'square' | 'diamond' | 'x';
   /** The ASCII texture inside the blobs: a circular "swirl" or concentric "diamond" rings. */
   asciiPattern?: 'swirl' | 'diamond';
-  /** A CSS color or gradient multiplied over the white blobs, which tints them. */
+  /**
+   * A CSS color or gradient multiplied over the white blobs, which tints them.
+   * "prismatic" washes them in soft, slowly shifting colors instead.
+   */
   tint?: string;
 };
+
+/** An x inside the cell box. The arms are thick enough to survive the goo blur. */
+const X_CLIP =
+  'polygon(0 30%, 30% 0, 50% 20%, 70% 0, 100% 30%, 80% 50%, 100% 70%, 70% 100%, 50% 80%, 30% 100%, 0 70%, 20% 50%)';
 
 const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
   className = '',
@@ -54,13 +64,19 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
   // the fold on load), but its rAF loop should stop doing real work once
   // scrolled out of view — e.g. while the user is dwelling at the footer.
   const visibleRef = useRef(true);
+  // The field stays hidden until the cells exist and the first ASCII frame is drawn,
+  // so a refresh never flashes bare white blobs.
+  const [ready, setReady] = useState(false);
+  const readyRef = useRef(false);
 
   const opacity = settings.heroOpacity;
-  const blur = settings.heroBlur;
+  // X cells are larger than squares and sit on the outskirts. Their arms would thin out under the full blur.
+  const isX = cellShape === 'x';
+  const blur = isX ? Math.min(settings.heroBlur, 6.5) : settings.heroBlur;
   const contrast = settings.heroContrast;
   const threshold = settings.heroThreshold;
   const borderRadius = 0;
-  const cellSize = settings.heroCellSize;
+  const cellSize = isX ? 72 : settings.heroCellSize;
   const mouseRadius = 280;
   const mouseStrength = 120;
   const mouseLag = 0.85;
@@ -104,8 +120,9 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
       centerX = t.left - rect.left + t.width / 2;
       centerY = t.top - rect.top + t.height / 2;
       // A touch more room than the copy itself, so the blobs sit on the outskirts.
+      // X cells keep clear of the middle and gather at the edges.
       clearW = (t.width / 2 + gap) * 1.12;
-      clearH = (t.height / 2 + gap) * 1.12;
+      clearH = (t.height / 2 + (isX ? gap * 0.5 : gap)) * 1.12;
       if (centerFadeRef.current) {
         centerFadeRef.current.style.background = `radial-gradient(ellipse ${Math.round(clearW * 1.3)}px ${Math.round(clearH * 1.3)}px at ${Math.round(centerX)}px ${Math.round(centerY)}px, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)`;
       }
@@ -120,7 +137,7 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
         const s = r * cols + c + 7;
-        if (sr(s) > settings.heroDensity) continue;
+        if (sr(s) > (isX ? 0.97 : settings.heroDensity)) continue;
 
         const cx = offsetX + c * gap;
         const cy = offsetY + r * gap;
@@ -133,7 +150,8 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
           // Clear inside the ellipse, then thin out over a band past its edge
           // so the boundary looks eroded rather than drawn with a compass.
           if (ellipseDist < 1) continue;
-          if (ellipseDist < 2.2 && sr(s + 20) > (ellipseDist - 1) / 1.2) continue;
+          const band = isX ? 0.8 : 1.2;
+          if (ellipseDist < 1 + band && sr(s + 20) > (ellipseDist - 1) / band) continue;
         } else if (ellipseDist < 1) {
           if (ellipseDist < 0.4) continue;
           if (sr(s + 20) > 0.15) continue;
@@ -160,6 +178,7 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
           height: `${cellSize}px`,
           background: 'white',
           borderRadius: `${borderRadius}%`,
+          clipPath: isX ? X_CLIP : '',
           transform: `translate(-50%, -50%)${rot}`,
           translate: '0px 0px',
           willChange: 'transform, translate',
@@ -393,6 +412,11 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
         ctx.fillText(line, 0, r * charFontSize);
       }
 
+      if (!readyRef.current && cellsRef.current.length > 0) {
+        readyRef.current = true;
+        setReady(true);
+      }
+
       rafRef.current = requestAnimationFrame(tick);
     };
 
@@ -409,6 +433,7 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
     <div
       ref={rootRef}
       className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
+      style={{ opacity: ready ? 1 : 0, transition: 'opacity 400ms ease-out' }}
       aria-hidden="true"
     >
       {/* SVG Goo Filter */}
@@ -460,10 +485,12 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
           style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }}
         />
 
-        {/* Optional tint — multiply keeps black black and turns the white glyphs this color */}
-        {tint && (
+        {/* Multiply again: the white ASCII takes the tint's color, and black stays black */}
+        {tint === 'prismatic' ? (
+          <div className="prism-wash absolute inset-0" style={{ mixBlendMode: 'multiply' }} />
+        ) : tint ? (
           <div className="absolute inset-0" style={{ background: tint, mixBlendMode: 'multiply' }} />
-        )}
+        ) : null}
       </div>
 
       {/* Radial fade around center */}

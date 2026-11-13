@@ -1,0 +1,250 @@
+'use client'
+
+import React, { useMemo } from 'react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import PrismaticCanvas from '@/app/components/PrismaticCanvas';
+
+/** Sets the dot size and shade on the timeline: major > feature > regular. */
+export type TimelineKind = 'major' | 'feature' | 'regular';
+
+export type TimelineItem = {
+  id: string;
+  title: string;
+  kind?: TimelineKind;
+  /** ISO start time */
+  date: string;
+  endDate: string | null;
+  timezone: string;
+  url: string;
+};
+
+/** Vertical center of the timeline dots, so the track lines pass through them. */
+const TRACK_TOP = 'top-[10px]';
+
+function formatDate(iso: string, timeZone: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone,
+  });
+}
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+
+type EventTimelineProps = {
+  upcoming: TimelineItem[];
+  past: TimelineItem[];
+  loading?: boolean;
+  /** Where the "More events coming soon" box points when nothing is scheduled. */
+  calendarHref: string;
+  /** Where the box after the oldest event points. */
+  archiveHref: string;
+  archiveLabel?: string;
+  /** Show only this many of the newest past events. */
+  maxPast?: number;
+};
+
+/**
+ * Horizontal timeline. Time runs right to left: upcoming events sit left of the
+ * "Today" marker, past events run to the right from newest to oldest.
+ */
+export default function EventTimeline({
+  upcoming,
+  past,
+  loading = false,
+  calendarHref,
+  archiveHref,
+  archiveLabel = 'All past events',
+  maxPast,
+}: EventTimelineProps) {
+  // Latest first on both sides, so the soonest upcoming event sits next to "Today".
+  const upcomingDesc = useMemo(
+    () => [...upcoming].sort((a, b) => b.date.localeCompare(a.date)),
+    [upcoming]
+  );
+  const pastDesc = useMemo(() => {
+    const sorted = [...past].sort((a, b) => b.date.localeCompare(a.date));
+    return maxPast ? sorted.slice(0, maxPast) : sorted;
+  }, [past, maxPast]);
+
+  const ArchiveIcon = isExternal(archiveHref) ? ArrowUpRight : ArrowRight;
+
+  if (loading) {
+    return (
+      <div className="h-24 flex items-center">
+        <div className="animate-spin rounded-full h-5 w-5 border-b border-white/20" />
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="-mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0 overflow-x-auto pb-4 [mask-image:linear-gradient(to_right,black_88%,transparent)]"
+      style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.15) transparent' }}
+    >
+      <ol className="flex items-stretch w-max pt-2">
+        {/* Upcoming: dashed track, since these dates have not happened yet */}
+        <li className="relative flex">
+          <span
+            className={`absolute ${TRACK_TOP} left-0 right-0 border-t border-dashed border-white/25`}
+            aria-hidden="true"
+          />
+          {upcomingDesc.length === 0 ? (
+            <ul className="flex">
+              <TimelineSlot
+                href={calendarHref}
+                variant="featured"
+                dot={<span className="block h-2.5 w-2.5 rounded-full border border-dashed border-white/50 bg-black" />}
+              >
+                <span className="font-display text-lg text-white/85 tracking-tight group-hover:text-white transition-colors">
+                  More events
+                  <br />
+                  coming soon
+                </span>
+              </TimelineSlot>
+            </ul>
+          ) : (
+            <ul className="flex">
+              {upcomingDesc.map((event) => (
+                <TimelineEvent key={event.id} event={event} variant="featured" />
+              ))}
+            </ul>
+          )}
+        </li>
+
+        <TodayMarker />
+
+        {/* Past: solid track that fades toward older events */}
+        <li className="relative flex">
+          <span
+            className={`absolute ${TRACK_TOP} left-0 right-0 h-px bg-gradient-to-r from-white/35 via-white/15 to-white/5`}
+            aria-hidden="true"
+          />
+          <ul className="flex">
+            {pastDesc.map((event) => (
+              <TimelineEvent key={event.id} event={event} />
+            ))}
+            <TimelineSlot
+              href={archiveHref}
+              variant="archive"
+              dot={<span className="block h-2.5 w-2.5 rounded-full border border-white/30 bg-black" />}
+            >
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm text-white/45 group-hover:text-white/80 transition-colors">
+                {archiveLabel}
+                <ArchiveIcon className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" />
+              </span>
+            </TimelineSlot>
+            {/* Room to scroll the last box clear of the right-edge fade */}
+            <li className="w-40 shrink-0" aria-hidden="true" />
+          </ul>
+        </li>
+      </ol>
+    </div>
+  );
+}
+
+function TodayMarker() {
+  return (
+    <li className="relative w-48 shrink-0 flex justify-center" aria-label="Today">
+      {/* Both tracks run into the marker so the line reads as continuous */}
+      <span className={`absolute ${TRACK_TOP} left-0 w-1/2 border-t border-dashed border-white/25`} aria-hidden="true" />
+      <span className={`absolute ${TRACK_TOP} right-0 w-1/2 h-px bg-white/35`} aria-hidden="true" />
+      {/* The label centers on the boxes' shared line: 1.25rem dot row + 1rem stem + half of 11.25rem */}
+      <span className="absolute -top-2 h-[7.5rem] left-1/2 w-px -translate-x-1/2 bg-white/80" aria-hidden="true" />
+      <span className="relative z-10 mt-[7.0625rem] h-fit rounded-sm border border-white/60 bg-black px-2 py-1 text-xs text-white">
+        Today
+      </span>
+    </li>
+  );
+}
+
+/**
+ * Box styles. "featured" (upcoming events and the "coming soon" placeholder) is
+ * 1.5x wider and taller and sits on the same color field as the hero stats bar.
+ * "archive" (the link after the oldest event) is grey with faint diagonal stripes.
+ */
+type SlotVariant = 'default' | 'featured' | 'archive';
+
+const ARCHIVE_STRIPES =
+  'repeating-linear-gradient(135deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 7px)';
+
+/** One stop on the timeline: a dot on the track, a short stem, then a box. */
+function TimelineSlot({
+  href,
+  dot,
+  variant = 'default',
+  title,
+  children,
+}: {
+  href: string;
+  dot: React.ReactNode;
+  variant?: SlotVariant;
+  /** Full text for a box whose title is cut short. */
+  title?: string;
+  children: React.ReactNode;
+}) {
+  const featured = variant === 'featured';
+  const archive = variant === 'archive';
+
+  return (
+    <li className={`relative shrink-0 px-2 ${featured ? 'w-72' : 'w-48'}`}>
+      <a
+        href={href}
+        title={title}
+        {...(isExternal(href) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        className="group flex flex-col items-center"
+      >
+        <span className="relative z-10 flex h-5 items-center justify-center transition-transform duration-300 group-hover:scale-125">
+          {dot}
+        </span>
+        {/* Smaller boxes get a longer stem (half the 3.75rem height gap), so every box shares one center line */}
+        <span
+          className={`w-px bg-white/15 group-hover:bg-white/35 transition-colors ${featured ? 'h-4' : 'h-[2.875rem]'}`}
+          aria-hidden="true"
+        />
+        <span
+          className={`relative flex w-full flex-col items-center justify-center overflow-hidden rounded-sm border border-white/10 px-4 py-3.5 text-center transition-[border-color,transform] duration-300 group-hover:-translate-y-0.5 group-hover:border-white/30 ${
+            featured ? 'h-[11.25rem] bg-black' : archive ? 'h-[7.5rem] bg-neutral-950' : 'h-[7.5rem] bg-black/70'
+          }`}
+          style={archive ? { backgroundImage: ARCHIVE_STRIPES } : undefined}
+        >
+          {featured && <PrismaticCanvas intensity="medium" />}
+          {/* Text ignores the pointer so mouse moves reach the color field underneath */}
+          <span className="pointer-events-none relative z-10 flex flex-col items-center">{children}</span>
+        </span>
+      </a>
+    </li>
+  );
+}
+
+const DOT_BY_KIND: Record<TimelineKind, string> = {
+  major: 'h-3.5 w-3.5 bg-white shadow-[0_0_10px_rgba(255,255,255,0.55)]',
+  feature: 'h-2.5 w-2.5 bg-white/70',
+  regular: 'h-2 w-2 bg-white/35',
+};
+
+function TimelineEvent({ event, variant = 'default' }: { event: TimelineItem; variant?: SlotVariant }) {
+  const tz = event.timezone || 'America/Los_Angeles';
+  const kind = event.kind ?? 'regular';
+
+  return (
+    <TimelineSlot
+      href={event.url}
+      variant={variant}
+      title={event.title}
+      dot={<span className={`block rounded-full ${DOT_BY_KIND[kind]}`} />}
+    >
+      <time dateTime={event.date} className="text-sm tabular-nums text-white/45 group-hover:text-white/65 transition-colors">
+        {formatDate(event.date, tz)}
+      </time>
+      <span
+        className={`mt-1 line-clamp-3 font-display text-base tracking-tight leading-snug group-hover:text-white transition-colors ${
+          kind === 'major' ? 'text-white' : 'text-white/75'
+        }`}
+      >
+        {event.title}
+      </span>
+    </TimelineSlot>
+  );
+}

@@ -6,8 +6,7 @@ import dynamic from 'next/dynamic';
 import { useSelectedLayoutSegments } from 'next/navigation';
 import { sendGAEvent } from '@next/third-parties/google';
 import MotionSection from '@/app/components/motion/MotionSection';
-import { UCSD_FOOTER_FIRE } from '@/app/chapters/ucsd/lib/theme';
-import { SDSU_FOOTER_FIRE } from '@/app/chapters/sdsu/lib/theme';
+import type { FooterTheme } from './FooterCanvas';
 
 // FooterCanvas is a client-only canvas effect below the fold on first
 // load — split it out of the main layout chunk.
@@ -22,9 +21,8 @@ const linkClass = 'text-white/70 hover:text-white transition-colors duration-200
 const Footer: React.FC = () => {
   const segments = useSelectedLayoutSegments();
   const onChapterSite = segments[0] === 'chapters' && (segments[1] === 'ucsd' || segments[1] === 'sdsu');
-  const chapter = onChapterSite ? segments[1] : null;
-  // Each chapter colors the ASCII fire with its own accent; the main site keeps the rainbow
-  const fireColors = chapter === 'ucsd' ? UCSD_FOOTER_FIRE : chapter === 'sdsu' ? SDSU_FOOTER_FIRE : undefined;
+  // Each chapter's ASCII fire takes its own colors and cell shape; the main site keeps the rainbow
+  const theme: FooterTheme = onChapterSite ? (segments[1] as FooterTheme) : 'main';
 
   // The UCSD people lookbook stands alone, with no footer.
   if (onChapterSite && segments[1] === 'ucsd' && segments[2] === 'people') return null;
@@ -40,8 +38,8 @@ const Footer: React.FC = () => {
 
   return (
     <footer className="relative pt-16 overflow-hidden">
-      {/* The canvas hands its colors to a worker once, so a new chapter remounts it */}
-      <FooterCanvas key={chapter ?? 'main'} fireColors={fireColors} />
+      {/* The canvas hands its colors to a worker once, so a new theme remounts it */}
+      <FooterCanvas key={theme} theme={theme} />
 
       <MotionSection className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-32">
         {/* On desktop, row 1 sets SDx, Navigate, and Community on one baseline.
@@ -106,6 +104,7 @@ const Footer: React.FC = () => {
           <h3 className={`${headingClass} mt-8 md:mt-0 md:col-start-3 md:row-start-1 md:self-baseline`}>Navigate</h3>
           <ul className="space-y-2 text-sm md:col-start-3 md:row-start-2">
             {[
+              { href: mainHref('/'), label: 'Home' },
               { href: mainHref('/events'), label: 'Events' },
               { href: mainHref('/chapters'), label: 'Chapters' },
             ].map((link) => (

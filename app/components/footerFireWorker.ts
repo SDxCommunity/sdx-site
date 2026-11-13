@@ -122,6 +122,9 @@ var state = {
   paused: false,
   fontFamily: 'monospace',
   fontRequested: false,
+  // True while the webfont is still loading, so the first frame is not announced in the fallback font.
+  fontPending: false,
+  announced: false,
   charWidth: 0,
   cols: 0,
   rows: 0,
@@ -214,6 +217,10 @@ function tick() {
       state.metricsDirty = false;
     }
     drawFrame(performance.now() * 0.001);
+    if (!state.announced && !state.fontPending) {
+      state.announced = true;
+      self.postMessage({ type: 'ready' });
+    }
   }
   self.requestAnimationFrame(tick);
 }
@@ -225,6 +232,7 @@ function loadFont(url) {
   if (state.fontRequested) return;
   state.fontRequested = true;
   if (typeof FontFace !== 'function' || !self.fonts) return;
+  state.fontPending = true;
   fetch(url)
     .then(function (r) { return r.arrayBuffer(); })
     .then(function (buf) {
@@ -235,10 +243,12 @@ function loadFont(url) {
     .then(function () {
       state.fontFamily = 'Space Mono';
       state.metricsDirty = true;
+      state.fontPending = false;
       self.postMessage({ type: 'fontLoaded' });
     })
     .catch(function (err) {
       state.fontRequested = false; // allow a later 'font' retry to try again
+      state.fontPending = false;
       self.postMessage({ type: 'fontFailed', error: String(err) });
     });
 }
