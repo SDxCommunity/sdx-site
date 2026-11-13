@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
+  // The chapter lives at sdsu.sdx.community, so its canonical URL and preview image name that host.
+  metadataBase: new URL('https://sdsu.sdx.community'),
+  alternates: { canonical: '/' },
   title: {
     default: 'SDxSDSU',
     template: '%s · SDxSDSU',
