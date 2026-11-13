@@ -2,8 +2,8 @@
 
 import React from 'react';
 import Image, { type StaticImageData } from 'next/image';
-import { m } from 'motion/react';
 import MotionSection from '@/app/components/motion/MotionSection';
+import styles from './About.module.css';
 import hackathon from '../assets/events/voice-agent-hackathon.jpg';
 import kickoff from '../assets/events/kickoff.jpg';
 import buildDayOct from '../assets/events/build-day-oct-11.jpg';
@@ -62,26 +62,41 @@ export default function About() {
             <MotionSection delay={0.08} className="w-full">
               <div className="grid grid-cols-2 gap-5 sm:gap-7">
                 {posters.map((poster) => (
-                  <m.a
+                  <a
                     key={poster.id}
                     href={poster.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${poster.title} on Luma`}
-                    className="group relative block aspect-square overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] hover:border-white/25 hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow] duration-200"
-                    initial={false}
-                    style={{ rotate: poster.rotate }}
-                    whileHover={{ y: -8, rotate: poster.rotate.startsWith('-') ? '-2.6deg' : '2.6deg' }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 26 }}
+                    className={`group relative block aspect-square ${styles.poster}`}
+                    style={
+                      {
+                        '--tilt': poster.rotate,
+                        '--tilt-hover': poster.rotate.startsWith('-') ? '-2.6deg' : '2.6deg',
+                      } as React.CSSProperties
+                    }
                   >
-                    <Image
-                      src={poster.cover}
-                      alt={poster.title}
-                      fill
-                      sizes="(min-width: 1024px) 320px, 50vw"
-                      className="object-cover opacity-90 transition-opacity duration-200 group-hover:opacity-100"
+                    {/* The hover shadow and edge fade in as layers. Animating box-shadow or
+                        border-color would repaint the card on every frame. */}
+                    <span
+                      className="pointer-events-none absolute inset-0 rounded-lg shadow-[0_18px_40px_-12px_rgba(0,0,0,0.9)] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                      aria-hidden="true"
                     />
-                  </m.a>
+                    <span className="absolute inset-0 overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02]">
+                      <Image
+                        src={poster.cover}
+                        alt={poster.title}
+                        fill
+                        sizes="(min-width: 1024px) 320px, 50vw"
+                        className="object-cover opacity-90 transition-opacity duration-200 group-hover:opacity-100"
+                      />
+                    </span>
+                    {/* Over the 8% base edge, an 18.5% edge adds up to the old 25% hover edge */}
+                    <span
+                      className="pointer-events-none absolute inset-0 rounded-lg border border-white/[0.185] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                      aria-hidden="true"
+                    />
+                  </a>
                 ))}
               </div>
             </MotionSection>

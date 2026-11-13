@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { m, useScroll, useTransform } from 'motion/react';
 import { EASE_SOFT } from '@/lib/motion';
 import BackgroundEffects from '@/app/components/BackgroundEffects';
@@ -24,10 +24,33 @@ export default function Hero() {
   const contentY = useTransform(scrollY, [0, 480], [0, -56]);
   const fieldOpacity = useTransform(scrollY, [0, 900], [1, 0.5]);
 
+  // The blob field shows only on the first screen; below it a black cover hides it.
+  // Its animated cells and goo filter still cost every frame while any part of the
+  // hero is on screen, which made the sections below lag. Skip rendering the field
+  // once the first screen has scrolled away.
+  const firstScreenRef = useRef<HTMLDivElement>(null);
+  const [fieldOn, setFieldOn] = useState(true);
+  useEffect(() => {
+    const el = firstScreenRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    // The top margin turns the field back on just before it scrolls into view.
+    const io = new IntersectionObserver(([entry]) => setFieldOn(entry.isIntersecting), {
+      rootMargin: '64px 0px 0px 0px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section className="relative flex flex-col overflow-hidden">
+      <div ref={firstScreenRef} className="pointer-events-none absolute inset-x-0 top-0 h-[100svh]" aria-hidden="true" />
+
       {/* ── Background: the site's blob field, cut into red diamonds for SDSU ── */}
-      <m.div className="absolute inset-0 w-screen overflow-hidden" style={{ opacity: fieldOpacity }} aria-hidden="true">
+      <m.div
+        className="absolute inset-0 w-screen overflow-hidden"
+        style={{ opacity: fieldOpacity, contentVisibility: fieldOn ? 'visible' : 'hidden' }}
+        aria-hidden="true"
+      >
         <BackgroundEffects />
         <MetaballCanvas
           bottomFade="none"

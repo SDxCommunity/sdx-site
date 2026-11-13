@@ -1,0 +1,31 @@
+/*
+ * The tilted event posters. Hover moves only transform and opacity, as CSS
+ * transitions, so the compositor runs them off the main thread and they stay
+ * smooth while the page's canvases draw.
+ *
+ * Each card sits at --tilt. On hover it lifts 8px and turns to --tilt-hover.
+ */
+.poster {
+  transform: rotate(var(--tilt));
+  /* Fallback for browsers without linear() easing */
+  transition: transform 350ms cubic-bezier(0.34, 1.4, 0.64, 1);
+  /* The spring the card used before (stiffness 400, damping 26), sampled over 350ms */
+  transition: transform 350ms
+    linear(0, 0.052, 0.178, 0.338, 0.504, 0.657, 0.788, 0.892, 0.968, 1.02, 1.05, 1.065, 1.068, 1.063, 1.054,
+      1.043, 1.032, 1.022, 1.013, 1.006, 1);
+  /* Its own layer, so the lift moves the painted card instead of repainting it */
+  will-change: transform;
+}
+
+/* Only a real pointer lifts the card, never a tap */
+@media (hover: hover) {
+  .poster:hover {
+    transform: translateY(-8px) rotate(var(--tilt-hover));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster {
+    transition: none;
+  }
+}
