@@ -22,6 +22,8 @@ export type Alum = {
   x?: string;
   github?: string;
   website?: string;
+  /** Graduated or left UCSD. Alumni show in their own grid, after current members. */
+  alumni?: boolean;
   /** Kept in the data but left off the page. Delete the line to show them again. */
   hidden?: boolean;
 };
@@ -29,6 +31,7 @@ export type Alum = {
 export const PEOPLE: Alum[] = [
   {
     slug: "tom-zheng",
+    alumni: true,
     name: "Tom Zheng",
     headline: "Co-founder and CTO @ Freesolo (YC X25)",
     current: ["Co-founder and CTO @ Freesolo (formerly Clado, YC X25)"],
@@ -65,6 +68,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "dhruv-kanetkar",
+    alumni: true,
     name: "Dhruv Kanetkar",
     headline: "Co-founder @ Tandem Holdings",
     current: ["Co-founder @ Tandem Holdings", "Claude Community Ambassador @ Anthropic"],
@@ -77,6 +81,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "henry-xiao",
+    alumni: true,
     name: "Henry Xiao",
     headline: "Chief of Staff @ Judgment Labs",
     current: ["Chief of Staff and Head of Talent @ Judgment Labs", "Advisor @ HX Agency"],
@@ -101,6 +106,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "david-wang-2",
+    alumni: true,
     name: "David Wang",
     headline: "Incoming SWE Intern @ Hudson River Trading",
     current: ["Incoming Software Engineer Intern @ Hudson River Trading", "M.S. Robotics @ University of Pennsylvania"],
@@ -111,6 +117,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "david-wang",
+    alumni: true,
     name: "David Wang",
     headline: "Founder @ Stealth startup",
     current: ["Founder @ Stealth startup"],
@@ -123,6 +130,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "justin-chou",
+    alumni: true,
     name: "Justin Chou",
     headline: "Founder @ Stealth startup",
     current: ["Founder @ Stealth startup"],
@@ -158,6 +166,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "keerthi-nalabotu",
+    alumni: true,
     name: "Keerthi Nalabotu",
     headline: "AI Builder in Residence @ True Ventures",
     current: ["AI Builder in Residence @ True Ventures"],
@@ -170,6 +179,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "putt-taleongpong",
+    alumni: true,
     name: "Putt Taleongpong",
     headline: "Software Engineer @ Sixtyfour (YC X25)",
     current: ["Software Engineer @ Sixtyfour (YC X25)"],
@@ -183,6 +193,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "joshua-lin",
+    alumni: true,
     name: "Joshua Lin",
     headline: "Founder @ Opal Intelligence Labs",
     current: ["Founder @ Opal Intelligence Labs"],
@@ -221,6 +232,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "matthew-lu",
+    alumni: true,
     name: "Matthew Lu",
     headline: "M.S. Computer Science @ Stanford",
     current: ["M.S. Computer Science @ Stanford"],
@@ -243,6 +255,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "may-hong",
+    alumni: true,
     name: "May Hong",
     headline: "AI Student @ Columbia University",
     current: ["AI Student @ Columbia University"],
@@ -308,6 +321,7 @@ export const PEOPLE: Alum[] = [
   },
   {
     slug: "alex-hamidi",
+    alumni: true,
     name: "Alex Hamidi",
     headline: "Building in stealth",
     current: ["Building in stealth"],

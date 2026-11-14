@@ -17,7 +17,15 @@ const STATS = [
   { value: '4', label: 'teams sent to YC' },
 ];
 
-/** The people lookbook: three stats, then the grid, set in Geist Serif. No top bar, footer, or intro. */
+const SHOWN = PEOPLE.filter((person) => !person.hidden);
+
+/** Current members first, then alumni. Each keeps the rank order of people.ts. */
+const GROUPS = [
+  { title: 'Current', people: SHOWN.filter((person) => !person.alumni) },
+  { title: 'Alumni', people: SHOWN.filter((person) => person.alumni) },
+];
+
+/** The people lookbook: three stats, then the two grids, set in Geist Serif. No top bar, footer, or intro. */
 export default function UCSDPeoplePage() {
   return (
     <main className={`${GeistSerif.className} max-w-5xl mx-auto px-4 sm:px-6 pt-10 md:pt-16 pb-24`}>
@@ -29,7 +37,7 @@ export default function UCSDPeoplePage() {
           </div>
         ))}
       </dl>
-      <PeopleGrid people={PEOPLE.filter((person) => !person.hidden)} />
+      <PeopleGrid groups={GROUPS} />
     </main>
   );
 }
