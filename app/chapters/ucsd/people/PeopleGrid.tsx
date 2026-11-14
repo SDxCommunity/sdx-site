@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { GeistSerif } from 'geist/font/serif';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -65,13 +65,16 @@ function Profile({ people, shown, onStep }: { people: Alum[]; shown: number; onS
   );
 }
 
+export type PeopleGroup = { title: string; people: Alum[] };
+
 /**
- * The people lookbook: a three-column grid in rank order. Each card shows a
- * photo, the name, and one current position. A click opens the full profile in
- * a dialog, where the arrow keys step through people. The URL hash names the
- * open person, so a link can open on anyone.
+ * The people lookbook: one titled three-column grid per group, in rank order.
+ * Each card shows a photo, the name, and one current position. A click opens
+ * the full profile in a dialog, where the arrow keys step through everyone,
+ * group after group. The URL hash names the open person, so a link can open on anyone.
  */
-export default function PeopleGrid({ people }: { people: Alum[] }) {
+export default function PeopleGrid({ groups }: { groups: PeopleGroup[] }) {
+  const people = useMemo(() => groups.flatMap((group) => group.people), [groups]);
   const [open, setOpen] = useState<number | null>(null);
   // The last person opened stays in the dialog while it fades out.
   const [shown, setShown] = useState(0);
@@ -106,23 +109,35 @@ export default function PeopleGrid({ people }: { people: Alum[] }) {
 
   return (
     <>
-      <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12">
-        {people.map((person, i) => (
-          <li key={person.slug}>
-            <button type="button" onClick={() => show(i)} className="group block w-full text-left">
-              <div className="relative aspect-square overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] transition-colors duration-150 group-hover:border-white/25">
-                <Portrait
-                  person={person}
-                  loading={i < 3 ? 'eager' : 'lazy'}
-                  className="absolute inset-0 h-full w-full grayscale transition-[filter,transform] duration-200 group-hover:scale-[1.02] group-hover:grayscale-0"
-                />
-              </div>
-              <p className="mt-3 text-lg md:text-2xl text-white tracking-tight leading-tight">{person.name}</p>
-              <p className="mt-1 text-xs md:text-sm text-white/55 leading-snug">{person.headline}</p>
-            </button>
-          </li>
-        ))}
-      </ul>
+      {groups.map((group, g) => {
+        // The index of this group's first person in the flat list the dialog steps through.
+        const offset = groups.slice(0, g).reduce((sum, earlier) => sum + earlier.people.length, 0);
+        return (
+          <section key={group.title} className={g > 0 ? 'mt-16 md:mt-24' : undefined}>
+            <h2 className="mb-6 md:mb-8 text-2xl md:text-4xl text-white tracking-tight leading-none">{group.title}</h2>
+            <ul className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12">
+              {group.people.map((person, j) => {
+                const i = offset + j;
+                return (
+                  <li key={person.slug}>
+                    <button type="button" onClick={() => show(i)} className="group block w-full text-left">
+                      <div className="relative aspect-square overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.02] transition-colors duration-150 group-hover:border-white/25">
+                        <Portrait
+                          person={person}
+                          loading={i < 3 ? 'eager' : 'lazy'}
+                          className="absolute inset-0 h-full w-full grayscale transition-[filter,transform] duration-200 group-hover:scale-[1.02] group-hover:grayscale-0"
+                        />
+                      </div>
+                      <p className="mt-3 text-lg md:text-2xl text-white tracking-tight leading-tight">{person.name}</p>
+                      <p className="mt-1 text-xs md:text-sm text-white/55 leading-snug">{person.headline}</p>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        );
+      })}
 
       <Dialog.Root open={open !== null} onOpenChange={(isOpen) => !isOpen && show(null)}>
         <Dialog.Portal>
