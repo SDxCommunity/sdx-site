@@ -125,7 +125,7 @@ export default function PeopleGrid({ groups }: { groups: PeopleGroup[] }) {
                         <Portrait
                           person={person}
                           loading={i < 3 ? 'eager' : 'lazy'}
-                          className="absolute inset-0 h-full w-full grayscale transition-[filter,transform] duration-200 group-hover:scale-[1.02] group-hover:grayscale-0"
+                          className="absolute inset-0 h-full w-full transition-[filter,transform] duration-200 group-hover:scale-[1.02] group-hover:saturate-[1.2]"
                         />
                       </div>
                       <p className="mt-3 text-lg md:text-2xl text-white tracking-tight leading-tight">{person.name}</p>
