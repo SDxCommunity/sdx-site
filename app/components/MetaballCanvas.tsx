@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCanvasSettings } from './CanvasSettingsContext';
 import { WIPE_ATTR } from './PageTransition';
+import { buildGlyphMasks, paintGlyphMask } from './glyphAtlas';
 
 type MetaballCanvasProps = {
   className?: string;
@@ -335,13 +336,19 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
     const charFontSize = 11;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const ctx = asciiCanvas.getContext('2d');
+    // Glyphs are painted from pre-drawn masks into one pixel buffer, not with fillText.
+    // The masks are rebuilt once the webfonts settle.
+    let glyphs = buildGlyphMasks(asciiChars, charFontSize);
+    let frame: ImageData | null = null;
+    let pixels = new Uint32Array(0);
+    let fontsSettled = false;
+    document.fonts?.ready.then(() => { fontsSettled = true; }).catch(() => {});
     // Each character's distance term in the wave, rebuilt only when the size changes.
-    let geo = { w: 0, h: 0, cols: 0, rows: 0, base: new Float32Array(0) };
+    let geo = { w: 0, h: 0, cols: 0, rows: 0, charWidth: 0, base: new Float32Array(0) };
     let lastAscii = 0;
     const buildGeo = (cw: number, ch: number) => {
-      if (!ctx) return;
-      ctx.font = `${charFontSize}px "Space Mono", monospace`;
-      const charWidth = ctx.measureText('@').width || charFontSize * 0.6;
+      if (!ctx || !glyphs) return;
+      const charWidth = glyphs.charWidth;
       const cols = Math.ceil(cw / charWidth) + 5;
       const rows = Math.ceil(ch / charFontSize) + 2;
       const base = new Float32Array(cols * rows);
@@ -355,7 +362,7 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
               : Math.sqrt(dx * dx + dy * dy) * 0.015 + Math.atan2(dy, dx) * 2;
         }
       }
-      geo = { w: cw, h: ch, cols, rows, base };
+      geo = { w: cw, h: ch, cols, rows, charWidth, base };
     };
 
     const tick = () => {
@@ -454,26 +461,34 @@ const MetaballCanvas: React.FC<MetaballCanvasProps> = ({
           asciiCanvas.width = cw;
           asciiCanvas.height = ch;
         }
+        if (fontsSettled) {
+          fontsSettled = false;
+          glyphs = buildGlyphMasks(asciiChars, charFontSize);
+          geo.w = 0;
+        }
         if (geo.w !== cw || geo.h !== ch) buildGeo(cw, ch);
 
+        if (!frame || frame.width !== cw || frame.height !== ch) {
+          frame = ctx.createImageData(cw, ch);
+          pixels = new Uint32Array(frame.data.buffer);
+        }
         // Black background is essential — multiply blend: black × anything = black
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, cw, ch);
-        ctx.font = `${charFontSize}px "Space Mono", monospace`;
-        ctx.fillStyle = 'white';
-        ctx.textBaseline = 'top';
+        pixels.fill(0xff000000);
 
         const shift = now * 0.0003 * (asciiPattern === 'diamond' ? 4 : 3);
         const last = asciiChars.length - 1;
-        const { cols, rows, base } = geo;
-        const line: string[] = new Array(cols);
-        for (let r = 0; r < rows; r++) {
-          const row = r * cols;
-          for (let c = 0; c < cols; c++) {
-            line[c] = asciiChars[Math.floor((Math.sin(base[row + c] - shift) * 0.5 + 0.5) * last)];
+        const { cols, rows, charWidth, base } = geo;
+        if (glyphs) {
+          for (let r = 0; r < rows; r++) {
+            const row = r * cols;
+            const y = r * charFontSize;
+            for (let c = 0; c < cols; c++) {
+              const index = Math.floor((Math.sin(base[row + c] - shift) * 0.5 + 0.5) * last);
+              paintGlyphMask(pixels, cw, ch, glyphs, index, c * charWidth, y);
+            }
           }
-          ctx.fillText(line.join(''), 0, r * charFontSize);
         }
+        ctx.putImageData(frame, 0, 0);
       }
 
       if (!readyRef.current && cellsRef.current.length > 0) {

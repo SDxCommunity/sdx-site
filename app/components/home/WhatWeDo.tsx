@@ -10,8 +10,8 @@ import { Count } from '@/app/components/StatStrip';
 
 const stats = [
   { value: 3000, suffix: '+', label: 'builders' },
-  { value: 50, suffix: '+', label: 'events hosted' },
-  { value: 15, suffix: '+', label: 'startups built' },
+  { value: 100, suffix: '+', label: 'events hosted' },
+  { value: 25, suffix: '+', label: 'startups built' },
 ];
 
 /** Add a photo by setting `image` to a path under /public, for example '/programs/paper-club.jpg'. */
@@ -50,9 +50,11 @@ export default function WhatWeDo() {
           <MotionSection delay={0.08} className="lg:col-span-6">
             <dl className="grid grid-cols-3 divide-x divide-white/15 rounded-xl border border-white/25 bg-white/[0.02] py-7 md:py-8">
               {stats.map((stat) => (
-                <div key={stat.label} className="flex flex-col-reverse items-center px-2 text-center">
+                // The label comes first in the markup, as a dl needs. The column runs in reverse from the
+                // top, so every number sits on one line even when a label wraps to two.
+                <div key={stat.label} className="flex flex-col-reverse justify-end items-center px-2 text-center">
                   <dt className="mt-2 text-xs sm:text-sm text-white/55">{stat.label}</dt>
-                  <dd className="font-display text-[1.35rem] sm:text-[2rem] lg:text-[2.25rem] leading-none tracking-tight whitespace-nowrap bg-gradient-to-r from-[#8fe3ec] via-[#c8b8ff] to-[#ffb9a0] bg-clip-text text-transparent">
+                  <dd className="font-display text-[clamp(1.05rem,5.6vw,1.35rem)] sm:text-[2rem] lg:text-[2.25rem] leading-none tracking-tight whitespace-nowrap bg-gradient-to-r from-[#8fe3ec] via-[#c8b8ff] to-[#ffb9a0] bg-clip-text text-transparent">
                     <Count to={stat.value} suffix={stat.suffix} />
                   </dd>
                 </div>
