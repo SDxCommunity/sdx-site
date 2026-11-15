@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react';
+import { buildGlyphAtlas, drawGlyph, type GlyphAtlas } from './glyphAtlas';
 
 // Light to dense: the blob edge gets the light glyphs, the core gets the dense ones.
 const GLYPHS = '.:-=+*#';
@@ -58,6 +59,11 @@ export default function AsciiDrift({ className = '' }: { className?: string }) {
     let raf = 0;
     let last = 0;
 
+    // Glyphs come from an atlas, not fillText. It is rebuilt when the pixel ratio changes.
+    let atlas: GlyphAtlas | null = null;
+    let atlasScale = 0;
+    document.fonts?.ready.then(() => { atlasScale = 0; }).catch(() => {});
+
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = container.getBoundingClientRect();
@@ -79,16 +85,19 @@ export default function AsciiDrift({ className = '' }: { className?: string }) {
       }));
 
       ctx.clearRect(0, 0, w, h);
-      ctx.font = `${FONT_SIZE}px "Space Mono", monospace`;
-      ctx.fillStyle = 'white';
-      ctx.textBaseline = 'top';
-      const charW = ctx.measureText('@').width || FONT_SIZE * 0.6;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (atlasScale !== dpr) {
+        atlasScale = dpr;
+        atlas = buildGlyphAtlas(GLYPHS, FONT_SIZE, 'white', dpr);
+      }
+      if (!atlas) return;
+      const glyphs = atlas;
+      const charW = glyphs.charWidth;
       const cols = Math.ceil(w / charW);
       const rows = Math.ceil(h / FONT_SIZE);
 
       for (let r = 0; r < rows; r++) {
         const py = r * FONT_SIZE + FONT_SIZE / 2;
-        let line = '';
         for (let c = 0; c < cols; c++) {
           const px = c * charW + charW / 2;
           let field = 0;
@@ -97,14 +106,11 @@ export default function AsciiDrift({ className = '' }: { className?: string }) {
             const dy = py - p.y;
             field += p.r2 / (dx * dx + dy * dy + 1);
           }
-          if (field < THRESHOLD) {
-            line += ' ';
-          } else {
+          if (field >= THRESHOLD) {
             const k = Math.min(1, (field - THRESHOLD) / (CORE - THRESHOLD));
-            line += GLYPHS[Math.min(GLYPHS.length - 1, Math.floor(k * GLYPHS.length))];
+            drawGlyph(ctx, glyphs, GLYPHS[Math.min(GLYPHS.length - 1, Math.floor(k * GLYPHS.length))], c * charW, r * FONT_SIZE);
           }
         }
-        ctx.fillText(line, 0, r * FONT_SIZE);
       }
       if (!readyRef.current) {
         readyRef.current = true;

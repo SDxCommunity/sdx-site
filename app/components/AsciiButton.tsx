@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react';
+import { buildGlyphAtlas, drawGlyph, type GlyphAtlas } from './glyphAtlas';
 
 type AsciiButtonProps = {
   children: React.ReactNode;
@@ -65,6 +66,20 @@ const AsciiButton: React.FC<AsciiButtonProps> = ({
     const chars = '.`-\'_,^:;=><+!*/?)s(d{x}[S]D|X#%&@';
     const fontSize = 14;
 
+    // Glyphs come from atlases, one per color, not fillText. They are rebuilt when the pixel ratio changes.
+    let atlasScale = 0;
+    let atlas: GlyphAtlas | null = null;
+    let hoverAtlas: GlyphAtlas | null = null;
+    const buildAtlases = (dpr: number) => {
+      atlasScale = dpr;
+      atlas = buildGlyphAtlas(chars, fontSize, colors.glyph, dpr);
+      // A fully clear hover color draws nothing, so it needs no atlas.
+      hoverAtlas = colors.glyphHover === colors.glyph ? atlas
+        : colors.glyphHover.endsWith(', 0)') ? null
+        : buildGlyphAtlas(chars, fontSize, colors.glyphHover, dpr);
+    };
+    document.fonts?.ready.then(() => { atlasScale = 0; }).catch(() => {});
+
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = container.getBoundingClientRect();
@@ -109,24 +124,23 @@ const AsciiButton: React.FC<AsciiButtonProps> = ({
 
       ctx.fillStyle = colors.fill;
       ctx.fillRect(0, 0, w, h);
-      ctx.font = `${fontSize}px "Space Mono", monospace`;
-      ctx.fillStyle = hoveredRef.current ? colors.glyphHover : colors.glyph;
-      ctx.textBaseline = 'top';
 
-      const charW = ctx.measureText('@').width || fontSize * 0.6;
-      const cols = Math.ceil(w / charW) + 1;
-      const rows = Math.ceil(h / fontSize) + 1;
-      const t = performance.now() * 0.001;
+      if (atlasScale !== dpr) buildAtlases(dpr);
+      const glyphs = hoveredRef.current ? hoverAtlas : atlas;
+      if (glyphs) {
+        const charW = glyphs.charWidth;
+        const cols = Math.ceil(w / charW) + 1;
+        const rows = Math.ceil(h / fontSize) + 1;
+        const t = performance.now() * 0.001;
 
-      for (let r = 0; r < rows; r++) {
-        let line = '';
-        for (let c = 0; c < cols; c++) {
-          const colPhase = Math.sin(c * 1.7) * 2;
-          const val = Math.sin(r * 0.5 - t * 6 + colPhase) * 0.5 + 0.5;
-          const idx = Math.floor(val * (chars.length - 1));
-          line += chars[idx];
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const colPhase = Math.sin(c * 1.7) * 2;
+            const val = Math.sin(r * 0.5 - t * 6 + colPhase) * 0.5 + 0.5;
+            const idx = Math.floor(val * (chars.length - 1));
+            drawGlyph(ctx, glyphs, chars[idx], c * charW, r * fontSize);
+          }
         }
-        ctx.fillText(line, 0, r * fontSize);
       }
 
       rafRef.current = requestAnimationFrame(tick);
